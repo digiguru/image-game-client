@@ -9,7 +9,11 @@ function App() {
   const [socket, setSocket] = useState(null);
 
   useEffect(() => {
-    const newSocket = io(`http://${window.location.hostname}:3000`);
+    
+    const location = process.env.REACT_APP_SERVER_HOSTNAME || `http://${window.location.hostname}:3000`
+
+    console.log(`Locations ${location}`);
+    const newSocket = io(location);
     setSocket(newSocket);
     return () => newSocket.close();
   }, [setSocket]);
