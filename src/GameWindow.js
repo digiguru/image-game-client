@@ -11,6 +11,7 @@ const GameWindow = ({socket}) => {
   const [users, setUsers] = useState([]);
   const [userName, setUserName] = useState("");
   const [prompt, addPrompt] = useState("");
+  const [image, setImage] = useState("");
  
   const handleAddUser = function (name) {
     setUserName(name);
@@ -26,16 +27,24 @@ const GameWindow = ({socket}) => {
       setGameState(gameState);
     };
     const usersListener = (users) => {
+      //TODO: This needs to use a session variable - duplicate usernames are possible
       setUsers(users);
+      const selectUser = users.find(x => x.value === userName)
+      console.log("GET users", userName, users, selectUser)
+      if(selectUser && selectUser.image) {
+        console.log("Update", image)
+        setImage(selectUser.image)
+      }
     };
 
     socket.on('gameState', gameStateListener);
     socket.on('users', usersListener);
+   
     return () => {
       socket.off('gameState', gameStateListener);
       socket.off('users', usersListener);
     };
-  }, [socket]);
+  }, [socket, userName]);
   
 
   return (
@@ -43,6 +52,7 @@ const GameWindow = ({socket}) => {
         <h1>{gameState}</h1>
         {userName && <p>Welcome, {userName}</p>}
         {prompt && <p>Your prompt is {prompt}</p>}
+        {image && <p><img src={image.startsWith("http") ? image : "data:image/jpeg;base64, "+image} /></p>}
         Users:
         <Users users={users} />
         {
