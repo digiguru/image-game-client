@@ -1,25 +1,28 @@
 import React, { useEffect, useState } from 'react';
 import './MessageInput.css';
-import Messages from './Messages';
-import MessageInput from './MessageInput';
-import UserInput from './UserInput';
-import PromptInput from './PromptInput';
 import Users from './Users';
+import { Lobby } from './Lobby';
+import { Ideation } from './Ideation';
+const uuidv4 = require('uuid').v4;
 
 const GameWindow = ({socket}) => {
   const [gameState, setGameState] = useState("waiting for host...");
   const [users, setUsers] = useState([]);
   const [userName, setUserName] = useState("");
+  const [userID, setUserID] = useState("");
   const [prompt, addPrompt] = useState("");
   const [image, setImage] = useState("");
  
   const handleAddUser = function (name) {
+    let id = uuidv4();
     setUserName(name);
-    socket.emit('addUser', name);
+    setUserID(id);
+
+    socket.emit('addUser', {name,userID:id});
   }
   const handleAddPrompt = function (prompt) {
     addPrompt(prompt);
-    socket.emit('addPrompt', prompt);
+    socket.emit('addPrompt', {prompt, userID});
   }
   useEffect(() => {
     
@@ -29,7 +32,7 @@ const GameWindow = ({socket}) => {
     const usersListener = (users) => {
       //TODO: This needs to use a session variable - duplicate usernames are possible
       setUsers(users);
-      const selectUser = users.find(x => x.value === userName)
+      const selectUser = users.find(x => x.name === userName)
       console.log("GET users", userName, users, selectUser)
       if(selectUser && selectUser.image) {
         console.log("Update", image)
@@ -61,6 +64,16 @@ const GameWindow = ({socket}) => {
               <Lobby userName={userName} handleAddUser={handleAddUser} />,
             'ideation':
               <Ideation userName={userName} prompt={prompt} users={users} handleAddPrompt={handleAddPrompt} />,
+            'voting':
+              <>
+              <h1>Voting page</h1>
+              <p>UShow each picture in a random order. Use can "upvote" and "downvote" and then see a grid of all their votes while the wait.</p>
+              </>,
+            'results':
+               <>
+               <h1>Show the resultsr</h1>
+               <p>Starting from lowest, pan up the leaderboard until you reach the top (3 should be visible on the screen)</p>
+               </>,
             'other':
               <>
                 <p>Not sure how you got here</p>
@@ -74,51 +87,6 @@ const GameWindow = ({socket}) => {
     </>
   );
 };
-const Lobby = ({userName, handleAddUser}) => {
-  return (<>
-    <p>Welcome to the lobby</p>
-    {userName ?
-      <>
-        <h1>{userName}</h1>
-        <p>waiting for the host to start the game</p>
-      </>
-      :
-      <>
-        <p>Enter your name</p>
-        <UserInput onAddUser={(name) => handleAddUser(name)} />
-      </>}
-  </>);
-}
-const Ideation = ({userName, prompt, users, handleAddPrompt}) => {
-  
-  const [readyPlayers, setReadyPlayers] = useState(0);
-  const [totalPlayers, setTotalPlayers] = useState(0);
-
-  useEffect(() => {
-    setReadyPlayers(users.filter(x => x.prompt).length);
-    setTotalPlayers(users.length);
-  }, [users])
-
-  return (<>
-    {!userName ?
-      <>
-        <h1>You cannot play as you havn't got a name</h1>
-        <p>Please ask the host to activate the lobby again</p>
-      </> :
-      prompt ?
-        <>
-          <h1>Your prompt is {prompt}</h1>
-          <p>Waiting for other players</p>
-          <p>Playes ready: {readyPlayers} / {totalPlayers}</p>
-          {totalPlayers === readyPlayers && <p>Waiting for host to go to the results</p>}
-        </> :
-        <>
-          <p>Ideation round</p>
-          <p>Please enter a prompt</p>
-          <PromptInput onAddPrompt={(prompt) => handleAddPrompt(prompt)} />
-        </>}
-  </>);
-}
 export default GameWindow;
 
 

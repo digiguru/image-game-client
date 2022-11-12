@@ -10,11 +10,11 @@ function Users({ users }) {
         .sort((a, b) => a.time - b.time)
         .map((user) => (
           <div
-            key={user.id}
+            key={user.userID}
             className="message-container"
             title={`Added at ${new Date(user.time).toLocaleTimeString()}`}
           >
-            <span className="user">{user.value}</span>
+            <span className="user">{user.name}</span>
           </div>
         ))
       }
