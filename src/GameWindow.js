@@ -3,6 +3,8 @@ import './MessageInput.css';
 import Users from './Users';
 import { Lobby } from './Lobby';
 import { Ideation } from './Ideation';
+import { Image } from './Image';
+import { Voting } from './Voting';
 const uuidv4 = require('uuid').v4;
 
 const GameWindow = ({socket}) => {
@@ -47,7 +49,8 @@ const GameWindow = ({socket}) => {
       socket.off('gameState', gameStateListener);
       socket.off('users', usersListener);
     };
-  }, [socket, userName]);
+  }, [socket, userName, image]);
+  
   
 
   return (
@@ -55,7 +58,7 @@ const GameWindow = ({socket}) => {
         <h1>{gameState}</h1>
         {userName && <p>Welcome, {userName}</p>}
         {prompt && <p>Your prompt is {prompt}</p>}
-        {image && <p><img src={image.startsWith("http") ? image : "data:image/jpeg;base64, "+image} /></p>}
+        {image && <p><Image image={image} /></p>}
         Users:
         <Users users={users} />
         {
@@ -65,13 +68,10 @@ const GameWindow = ({socket}) => {
             'ideation':
               <Ideation userName={userName} prompt={prompt} users={users} handleAddPrompt={handleAddPrompt} />,
             'voting':
-              <>
-              <h1>Voting page</h1>
-              <p>UShow each picture in a random order. Use can "upvote" and "downvote" and then see a grid of all their votes while the wait.</p>
-              </>,
+              <Voting initialUsers={users} currentUserID={userID} socket={socket} />,
             'results':
                <>
-               <h1>Show the resultsr</h1>
+               <h1>Show the results</h1>
                <p>Starting from lowest, pan up the leaderboard until you reach the top (3 should be visible on the screen)</p>
                </>,
             'other':
@@ -88,6 +88,8 @@ const GameWindow = ({socket}) => {
   );
 };
 export default GameWindow;
+
+
 
 
 

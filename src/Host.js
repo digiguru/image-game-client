@@ -41,10 +41,14 @@ const Host = ({socket}) => {
         <ul>
             <li><button onClick={() => handleClick("lobby")}>Lobby</button></li>
             <li><button onClick={() => handleClick("ideation")}>Ideation</button></li>
-            <li><button onClick={() => handleClick("waiting")}>Waiting</button></li>
-            <li><button onClick={() => handleClick("results")}>Results</button></li>
             <li><button onClick={() => handleClick("voting")}>Voting</button></li>
-            <li><button onClick={() => handleClick("winner")}>Winner</button></li>
+            { false && 
+            <>
+                <li><button onClick={() => handleClick("waiting")}>Waiting</button></li>
+                <li><button onClick={() => handleClick("results")}>Results</button></li>
+                <li><button onClick={() => handleClick("winner")}>Winner</button></li>
+            </>
+            }
         </ul>
         <pre>{JSON.stringify(users, null, 2)}</pre>
         <h1>Image generators</h1>
