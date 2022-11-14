@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import './MessageInput.css';
+import './GameWindow.css';
 import Users from './Users';
 import { Lobby } from './Lobby';
 import { Ideation } from './Ideation';
-import { Image } from './Image';
 import { Voting } from './Voting';
+import { Results } from './Results';
+
 const uuidv4 = require('uuid').v4;
 
 const GameWindow = ({socket}) => {
@@ -54,26 +55,21 @@ const GameWindow = ({socket}) => {
   
 
   return (
-    <>
-        <h1>{gameState}</h1>
-        {userName && <p>Welcome, {userName}</p>}
-        {prompt && <p>Your prompt is {prompt}</p>}
-        {image && <p><Image image={image} /></p>}
-        Users:
-        <Users users={users} />
+    <div className="game">
+        
         {
           {
             'lobby': 
-              <Lobby userName={userName} handleAddUser={handleAddUser} />,
+              <>
+              <Lobby userName={userName} handleAddUser={handleAddUser} />
+              <Users users={users} />
+              </>,
             'ideation':
-              <Ideation userName={userName} prompt={prompt} users={users} handleAddPrompt={handleAddPrompt} />,
+              <Ideation userName={userName} prompt={prompt} users={users} handleAddPrompt={handleAddPrompt} image={image} />,
             'voting':
               <Voting initialUsers={users} currentUserID={userID} socket={socket} />,
             'results':
-               <>
-               <h1>Show the results</h1>
-               <p>Starting from lowest, pan up the leaderboard until you reach the top (3 should be visible on the screen)</p>
-               </>,
+              <Results users={users} currentUserID={userID} socket={socket} />,
             'other':
               <>
                 <p>Not sure how you got here</p>
@@ -84,7 +80,7 @@ const GameWindow = ({socket}) => {
        
        
 
-    </>
+    </div>
   );
 };
 export default GameWindow;

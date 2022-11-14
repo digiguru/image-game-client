@@ -1,0 +1,17 @@
+.results ul {
+ 
+
+  justify-items: end;
+  display: grid;
+  
+  grid-template-rows: 1fr;
+  justify-content: left;
+  align-items: left;
+  width:100%;
+  padding: 0px;
+  margin: 0px;
+  
+}
+.results ul {
+  list-style-type: none;
+}

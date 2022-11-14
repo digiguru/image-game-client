@@ -1,0 +1,22 @@
+.voting {
+  font-weight: bold;
+  width: 100%;
+
+  list-style-type: none;
+  justify-items: end;
+  display: grid;
+  
+  grid-template-columns: repeat(2, 50% [col-start]);
+  justify-content: space-between;
+  align-items: center;
+  width:100%;
+  padding: 0px;
+  margin: 0px;
+  
+}
+.voting li {
+  border: 2px #FFF solid;
+}
+.voting li:has(.selected) {
+  border:  2px rgb(96, 47, 152) solid;
+}

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-
+import './Host.css'
 const Host = ({socket}) => {
   const [gameState, setGameState] = useState("waiting for host...");
   const [users, setUsers] = useState([]);
@@ -14,8 +14,6 @@ const Host = ({socket}) => {
     
     socket.on('gameState', gameStateListener);
     socket.on('users', usersListener);
-    
-  
 
     socket.emit('getGameState');
     return () => {
@@ -36,33 +34,50 @@ const Host = ({socket}) => {
     socket.emit('setGenerator', gen);
   };
   return (
-    <>
-        <h1>Admin - {gameState}</h1>
-        <ul>
-            <li><button onClick={() => handleClick("lobby")}>Lobby</button></li>
-            <li><button onClick={() => handleClick("ideation")}>Ideation</button></li>
-            <li><button onClick={() => handleClick("voting")}>Voting</button></li>
-            { false && 
-            <>
-                <li><button onClick={() => handleClick("waiting")}>Waiting</button></li>
-                <li><button onClick={() => handleClick("results")}>Results</button></li>
-                <li><button onClick={() => handleClick("winner")}>Winner</button></li>
-            </>
-            }
-        </ul>
-        <pre>{JSON.stringify(users, null, 2)}</pre>
-        <h1>Image generators</h1>
-        <div>
-            <input type="radio" name="generator"  onChange={handleSetGenerator} value="Mock"         checked={generator === "Mock"}        /> Mock
-            <input type="radio" name="generator"  onChange={handleSetGenerator} value="Stable Horde" checked={generator === "Stable Horde"}/> Stable Horde
-            <input type="radio" name="generator"  onChange={handleSetGenerator} value="Dream Studio" checked={generator === "Dream Studio"}/> Dream Studio
-            <input type="radio" name="generator"  onChange={handleSetGenerator} value="Dall-e"       checked={generator === "Dall-e"}      /> Dall-e
-        </div>
+    <div className="admin">
+      <div className="admin-menu">
+          <h1>Admin - {gameState}</h1>
+          <ul>
 
-        <h1>Update images</h1>
-        <button onClick={() => handleUpdateImages()}>Update Images</button>
-    </>
+              <li><SelectGameState label={"lobby"} currentGameState={gameState} handleClick={handleClick} /></li>
+              <li><SelectGameState label={"ideation"} currentGameState={gameState} handleClick={handleClick} /></li>
+              <li><SelectGameState label={"voting"} currentGameState={gameState} handleClick={handleClick} /></li>
+              <li><SelectGameState label={"results"} currentGameState={gameState} handleClick={handleClick} /></li>
+
+          </ul>
+      </div>
+      <div class="admin-debug">
+          <div>
+            <h1>Debug window</h1>
+            <pre>{JSON.stringify(users, null, 2)}</pre>
+          </div>
+
+          <div>
+            <h1>Image generators</h1>
+            <div className="admin-generators">
+                <RadioGenerator label="Mock" onChange={handleSetGenerator} generator={generator} />
+                <RadioGenerator label="Stable Horde" onChange={handleSetGenerator} generator={generator} />
+                <RadioGenerator label="Dream Studio" onChange={handleSetGenerator} generator={generator} />
+                <RadioGenerator label="Dall-e" onChange={handleSetGenerator} generator={generator} />
+            </div>
+          </div>
+          <h1>Update images</h1>
+          <button onClick={() => handleUpdateImages()}>Update Images</button>
+      </div>
+    </div>
   );
 };
-
+const SelectGameState = ({label, currentGameState, handleClick}) => {
+  const isSelected = currentGameState === label;
+  return <button className={isSelected && "selected"} onClick={() => handleClick(label)}>{label.toUpperCase()}</button>
+}
+const RadioGenerator = ({label, onChange, generator}) => {
+  const checked = generator === label
+  return <>
+    <input id={label} type="radio" name="generator"  onChange={onChange} value={label}         checked={checked}        /> 
+    <label htmlFor={label}>{label}</label>
+    </>;
+                
+}
 export default Host;
+

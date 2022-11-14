@@ -1,11 +1,15 @@
-import React from 'react';
-
+import React, { useEffect, useState } from 'react';
 import { Image } from './Image';
-
+import './Voting.css';
 export const Voting = ({initialUsers, currentUserID, socket}) => {
   const maxVotes = 3;
-  const [users, setUsers] = React.useState(initialUsers);
-  const [votes, setVotes] = React.useState(initialUsers.filter(u => u.selected).length)
+  console.log(initialUsers);
+  const [users, setUsers] = useState(initialUsers.map(x => {
+    console.log("Selectable", x.votes.includes(currentUserID), x)
+    return {...x, ...{selected: x.votes.includes(currentUserID)}}
+  }));
+  const [votes, setVotes] = useState(0)
+  
   const handleImageVote = (userID) => {
     console.log(`Vote for ${userID}`);
     setUsers(users.map(user => {
@@ -20,28 +24,29 @@ export const Voting = ({initialUsers, currentUserID, socket}) => {
       }
       return user;
     }));
-    setVotes(initialUsers.filter(u => u.selected).length)
-    //
+  
   }
-  /*useEffect(() => {
-    
-  }, [socket])*/
+  useEffect(() => {
+    setVotes(users.filter(u => u.selected).length)
+  }, [users])
   return <>
-    <h2>Choose an images to vote for. {votes} / {maxVotes}</h2>
-    <ul>
+    <h2>Choose up to {maxVotes} to vote for. {votes} / {maxVotes}</h2>
+    <p>Note - you can't vote for your image</p>
+    <ul className="voting">
       {[...Object.values(users)]
         .sort((a, b) => a.time - b.time)
-        .map(({ userID, image, time, selected }) => (
-          <div
+        .filter(x => x.image)
+        .map(({ userID, image, time, selected, prompt }) => (
+          <li
             key={userID}
             className="message-container"
             title={`Added at ${new Date(time).toLocaleTimeString()}`}
           >
-            <li><div>
-              {selected && "SELECTED"}
+            <div className={selected && "selected"}>
               <Image image={image} onClick={() => handleImageVote(userID)} clickable={currentUserID !== userID} />
-            </div></li>
-          </div>
+              <p>{prompt}</p>
+            </div>
+          </li>
         ))}
     </ul>
   </>;

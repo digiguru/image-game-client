@@ -1,0 +1,67 @@
+.admin {
+
+}
+.admin-menu {
+  background-color: rgb(96, 47, 152);
+  color: white;
+  font-weight: bold;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  justify-items: start;
+  align-items: center;
+  width: 100%;
+}
+.admin-menu > h1 {
+  padding: 10px;
+}
+
+.admin-menu > ul {
+  list-style-type: none;
+  display: inline-grid;
+  justify-items: end;
+  grid-template-columns: repeat(4, 25% [col-start]);
+  width:100%;
+  padding: 0px;
+  margin: 0px;
+  
+}
+.admin button {
+  width: 100%;
+  display: inline-block;
+  border: 1px sold white;
+  padding: 1rem;
+  margin: 0;
+  text-decoration: none;
+  background: #0069ed;
+  color: #ffffff;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  text-align: center;
+}
+
+.admin-menu button.selected {
+  background: rgb(96, 47, 152);
+}
+.admin-debug {
+  background: #cccccc;
+  color: black;
+  font-weight: bold;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  justify-items: start;
+  align-items: top;
+  width: 100%;
+}
+.admin-debug pre {
+  border: 1px solid #333;
+  background: white;
+  width: 90%;
+  height: 100px;
+  overflow: scroll;
+}
+.admin-generators {
+  display: grid;
+  grid-template-columns: 50px 1fr;
+}

@@ -3,25 +3,12 @@ import io from 'socket.io-client';
 import {
   BrowserRouter as Router,
   Routes,
-  Route,
-  Link
+  Route
 } from "react-router-dom";
 import GameWindow from './GameWindow';
 import Host from './Host'
 import './App.css';
 
-
-function Home() {
-  return <h2>Home</h2>;
-}
-
-function About() {
-  return <h2>About</h2>;
-}
-
-function Users() {
-  return <h2>Users</h2>;
-}
 
 function App() {
   const [socket, setSocket] = useState(null);
@@ -45,10 +32,10 @@ function App() {
   return (
     <div className="App">
       <header className="app-header">
-        React Chat
+        AI Image Game
       </header>
       { socket ? (
-        <div className="chat-container">
+        <>
 
           <Router>
             <div>
@@ -63,7 +50,7 @@ function App() {
           <GameWindow socket={socket} />
                 
 
-        </div>
+        </>
       ) : (
         <div>Not Connected</div>
       )}

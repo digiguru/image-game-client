@@ -1,17 +1,17 @@
 import React from 'react';
 import UserInput from './UserInput';
-
+import Loader from './Loader';
 export const Lobby = ({ userName, handleAddUser }) => {
   return (<>
-    <p>Welcome to the lobby</p>
     {userName ?
       <>
-        <h1>{userName}</h1>
-        <p>waiting for the host to start the game</p>
+        <h1>Thank you, {userName}</h1>
+        <p>Waiting for the host to start the game</p>
+        <Loader />
       </>
       :
       <>
-        <p>Enter your name</p>
+        <p>To get started, please enter your name.</p>
         <UserInput onAddUser={(name) => handleAddUser(name)} />
       </>}
   </>);
