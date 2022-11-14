@@ -14,7 +14,11 @@
 .admin-menu > h1 {
   padding: 10px;
 }
-
+pre {
+  white-space:pre-line;
+  overflow: scroll;
+  width: 500px;
+}
 .admin-menu > ul {
   list-style-type: none;
   display: inline-grid;
@@ -59,16 +63,22 @@
   grid-template-columns: 1fr 1fr;
   justify-items: start;
   align-items: top;
-  width: 100%;
+
 }
 .admin-debug pre {
   border: 1px solid #333;
   background: white;
-  width: 90%;
   height: 100px;
-  overflow: scroll;
+ 
 }
 .admin-generators {
   display: grid;
   grid-template-columns: 50px 1fr;
+}
+.debug {
+  border: 1px solid #333;
+  background: white;
+  width: 500px;
+  height: 500px;
+  overflow: scroll;
 }

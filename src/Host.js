@@ -5,6 +5,7 @@ const Host = ({socket}) => {
   const [users, setUsers] = useState([]);
   const [generator, setGenerator] = useState("Stable Horde");
   const [seeReset, setSeeReset] = useState(false);
+  const [debug, setDebug] = useState("");
   useEffect(() => {
     const gameStateListener = (gameState) => {
       setGameState(gameState);
@@ -12,16 +13,21 @@ const Host = ({socket}) => {
     const usersListener = (users) => {
         setUsers(users);
     };
+    const debugListener = (message) => {
+      var newMessage = JSON.stringify(message, null, 2)
+      console.log("DEBUG", newMessage)
+      setDebug(newMessage + "\n" + debug);
+    };
     
     socket.on('gameState', gameStateListener);
     socket.on('users', usersListener);
-
+    socket.on('debug', debugListener);
     socket.emit('getGameState');
     return () => {
       socket.off('gameState', gameStateListener);
       socket.off('users', usersListener);
     };
-  }, [socket]);
+  }, [socket, debug]);
   
   const handleClick = (area) => {
     socket.emit('setGameState', area);
@@ -38,6 +44,7 @@ const Host = ({socket}) => {
     socket.emit('reset');
   };
   return (
+    <>
     <div className="admin">
       <div className="admin-menu">
           <h1>Admin - {gameState}</h1>
@@ -54,6 +61,7 @@ const Host = ({socket}) => {
           <div>
             <h1>Debug window</h1>
             <pre>{JSON.stringify(users, null, 2)}</pre>
+
           </div>
 
           <div>
@@ -69,8 +77,12 @@ const Host = ({socket}) => {
           <button onClick={() => handleUpdateImages()}>Update Images</button>
           <button className={!seeReset ? "red" : "hidden"} onClick={() => setSeeReset(true)}>Reset Service</button>
           <button className={seeReset ? "red" : "hidden"} onClick={() => handleReset()}>Really Reset Service?</button>
+          
       </div>
+      
     </div>
+    <pre className='debug'>{JSON.stringify(debug, null, 2)}</pre>
+    </>
   );
 };
 const SelectGameState = ({label, currentGameState, handleClick}) => {
