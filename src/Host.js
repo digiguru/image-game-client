@@ -55,8 +55,8 @@ const Host = ({socket}) => {
           <div>
             <h1>Image generators</h1>
             <div className="admin-generators">
-                <RadioGenerator label="Mock" onChange={handleSetGenerator} generator={generator} />
                 <RadioGenerator label="Stable Horde" onChange={handleSetGenerator} generator={generator} />
+                <RadioGenerator label="Mock" onChange={handleSetGenerator} generator={generator} />
                 <RadioGenerator label="Dream Studio" onChange={handleSetGenerator} generator={generator} />
                 <RadioGenerator label="Dall-e" onChange={handleSetGenerator} generator={generator} />
             </div>
