@@ -41,8 +41,15 @@
   text-align: center;
 }
 
-.admin-menu button.selected {
+.admin-debug button.selected {
   background: rgb(96, 47, 152);
+}
+.admin-debug button.red {
+  background: #FF0000;
+}
+.admin-debug button.hidden {
+  display:none;
+
 }
 .admin-debug {
   background: #cccccc;

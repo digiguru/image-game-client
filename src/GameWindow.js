@@ -42,10 +42,19 @@ const GameWindow = ({socket}) => {
         setImage(selectUser.image)
       }
     };
+    const reset = () => {
+      setUsers([]);
+      setUserName("");
+      setUserID("");
+      addPrompt("");
+      setImage("");
+    }
 
     socket.on('gameState', gameStateListener);
+
     socket.on('users', usersListener);
-   
+    socket.on('reset-clients', gameStateListener);
+
     return () => {
       socket.off('gameState', gameStateListener);
       socket.off('users', usersListener);

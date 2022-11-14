@@ -4,6 +4,7 @@ const Host = ({socket}) => {
   const [gameState, setGameState] = useState("waiting for host...");
   const [users, setUsers] = useState([]);
   const [generator, setGenerator] = useState("Stable Horde");
+  const [seeReset, setSeeReset] = useState(false);
   useEffect(() => {
     const gameStateListener = (gameState) => {
       setGameState(gameState);
@@ -32,6 +33,9 @@ const Host = ({socket}) => {
     const gen = e.target.value; 
     setGenerator(gen)
     socket.emit('setGenerator', gen);
+  };
+  const handleReset = () => {
+    socket.emit('reset');
   };
   return (
     <div className="admin">
@@ -63,6 +67,8 @@ const Host = ({socket}) => {
           </div>
           <h1>Update images</h1>
           <button onClick={() => handleUpdateImages()}>Update Images</button>
+          <button className={!seeReset ? "red" : "hidden"} onClick={() => setSeeReset(true)}>Reset Service</button>
+          <button className={seeReset ? "red" : "hidden"} onClick={() => handleReset()}>Really Reset Service?</button>
       </div>
     </div>
   );
