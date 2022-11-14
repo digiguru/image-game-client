@@ -16,7 +16,7 @@ const Host = ({socket}) => {
     const debugListener = (message) => {
       var newMessage = JSON.stringify(message, null, 2)
       console.log("DEBUG", newMessage)
-      setDebug(newMessage + "\n" + debug);
+      setDebug(newMessage + "\n\n" + debug);
     };
     
     socket.on('gameState', gameStateListener);
@@ -81,7 +81,7 @@ const Host = ({socket}) => {
       </div>
       
     </div>
-    <pre className='debug'>{JSON.stringify(debug, null, 2)}</pre>
+    <pre className='debug'>{debug}</pre>
     </>
   );
 };
