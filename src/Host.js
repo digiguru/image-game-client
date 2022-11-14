@@ -46,7 +46,7 @@ const Host = ({socket}) => {
 
           </ul>
       </div>
-      <div class="admin-debug">
+      <div className="admin-debug">
           <div>
             <h1>Debug window</h1>
             <pre>{JSON.stringify(users, null, 2)}</pre>
@@ -69,7 +69,7 @@ const Host = ({socket}) => {
 };
 const SelectGameState = ({label, currentGameState, handleClick}) => {
   const isSelected = currentGameState === label;
-  return <button className={isSelected && "selected"} onClick={() => handleClick(label)}>{label.toUpperCase()}</button>
+  return <button className={isSelected ? "selected" : undefined} onClick={() => handleClick(label)}>{label.toUpperCase()}</button>
 }
 const RadioGenerator = ({label, onChange, generator}) => {
   const checked = generator === label

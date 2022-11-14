@@ -43,7 +43,7 @@ export const Voting = ({initialUsers, currentUserID, socket}) => {
             className="message-container"
             title={`Added at ${new Date(time).toLocaleTimeString()}`}
           >
-            <div className={selected && "selected"}>
+            <div className={selected ? "selected" : undefined}>
               <Image image={image} onClick={() => handleImageVote(userID)} clickable={currentUserID !== userID} />
               <p>{prompt}</p>
             </div>
