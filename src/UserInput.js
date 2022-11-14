@@ -14,7 +14,7 @@ const UserInput = ({onAddUser}) => {
       <input
         autoFocus
         value={name}
-        placeholder="Type your message"
+        placeholder="Type your name"
         onChange={(e) => {
           setName(e.currentTarget.value);
         }}

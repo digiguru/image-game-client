@@ -29,7 +29,7 @@ export const Ideation = ({ userName, prompt, users, handleAddPrompt, image}) => 
           
           <p>Playes ready: {readyPlayers} / {totalPlayers}</p>
           {totalPlayers === readyPlayers && <>
-          <p>Waiting for host to go to the results</p>
+          <p>Waiting for host to go to the voting page</p>
           <Loader />
           </>
           }

@@ -14,7 +14,7 @@ const PromptInput = ({onAddPrompt}) => {
       <input
         autoFocus
         value={prompt}
-        placeholder="Type your message"
+        placeholder="Type your prompt"
         onChange={(e) => {
           setPrompt(e.currentTarget.value);
         }}

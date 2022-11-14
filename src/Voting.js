@@ -31,7 +31,8 @@ export const Voting = ({initialUsers, currentUserID, socket}) => {
   }, [users])
   return <>
     <h2>Choose up to {maxVotes} to vote for. {votes} / {maxVotes}</h2>
-    <p>Note - you can't vote for your image</p>
+    <p>Note - you can't vote for your own image</p>
+    {votes === maxVotes && <p>You have used all your votes. Either unvote fro one or wait for the host to load the results.</p>}
     <ul className="voting">
       {[...Object.values(users)]
         .sort((a, b) => a.time - b.time)
