@@ -3,7 +3,7 @@ import './Host.css'
 const Host = ({socket}) => {
   const [gameState, setGameState] = useState("waiting for host...");
   const [users, setUsers] = useState([]);
-  const [generator, setGenerator] = useState("Stable Horde");
+  const [generator, setGenerator] = useState('Dall-e');
   const [seeReset, setSeeReset] = useState(false);
   const [debug, setDebug] = useState("");
   useEffect(() => {
