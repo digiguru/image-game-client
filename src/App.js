@@ -15,7 +15,7 @@ function App() {
   
   useEffect(() => {
     
-    const location = process.env.REACT_APP_SERVER_HOSTNAME || `http://${window.location.hostname}:3000`
+    const location = import.meta.env.VITE_SERVER_HOSTNAME || `http://${window.location.hostname}:3000`
 
     console.log(`Locations ${location}`);
     const newSocket = io(location);
