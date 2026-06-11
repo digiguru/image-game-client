@@ -20,7 +20,7 @@ export const Results = ({users}) => {
               <div>
                 <p><strong>{users.length - index}. {name}</strong></p>
                 <p>{prompt} <em>{votes.length} votes</em></p>
-                <Image image={image} />
+                <Image image={image} alt={prompt} />
             </div></li>
           </div>
         ))}

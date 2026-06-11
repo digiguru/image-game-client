@@ -22,7 +22,7 @@ export const Ideation = ({ userName, prompt, users, handleAddPrompt, image}) => 
         <>
           <h1>Here you go, {userName}</h1>
           {image ? <div>
-            <Image image={image} />
+            <Image image={image} alt={prompt} />
             <h2> {prompt}</h2>
             <p>Waiting for other players to dream up their creation</p>
           </div> : <><p>Loading your picture...</p><Loader /></>}
