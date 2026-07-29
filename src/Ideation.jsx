@@ -3,7 +3,6 @@ import PromptInput from './PromptInput';
 import Loader from './Loader';
 import { Image } from './Image';
 export const Ideation = ({ userName, prompt, users, handleAddPrompt, image}) => {
-
   const [readyPlayers, setReadyPlayers] = useState(0);
   const [totalPlayers, setTotalPlayers] = useState(0);
 
@@ -26,19 +25,15 @@ export const Ideation = ({ userName, prompt, users, handleAddPrompt, image}) => 
             <h2> {prompt}</h2>
             <p>Waiting for other players to dream up their creation</p>
           </div> : <><p>Loading your picture...</p><Loader /></>}
-          
           <p>Playes ready: {readyPlayers} / {totalPlayers}</p>
           {totalPlayers === readyPlayers && <>
-          <p>Waiting for host to go to the voting page</p>
-          <Loader />
-          </>
-          }
+            <p>Waiting for host to go to the voting page</p>
+            <Loader />
+          </>}
         </> :
         <>
-        {userName && <p>Welcome, {userName}</p>}
-        {prompt && <p>Your prompt is {prompt}</p>}
-        
-       
+          {userName && <p>Welcome, {userName}</p>}
+          {prompt && <p>Your prompt is {prompt}</p>}
           <h1>Okay, {userName}</h1>
           <p>Time to dream up a unique image</p>
           <p>Please describe what you would like to see</p>

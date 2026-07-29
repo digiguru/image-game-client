@@ -24,7 +24,6 @@ export const Voting = ({initialUsers, currentUserID, socket}) => {
       }
       return user;
     }));
-  
   }
   useEffect(() => {
     setVotes(users.filter(u => u.selected).length)
@@ -38,11 +37,7 @@ export const Voting = ({initialUsers, currentUserID, socket}) => {
         .sort((a, b) => a.time - b.time)
         .filter(x => x.image)
         .map(({ userID, image, time, selected, prompt }) => (
-          <li
-            key={userID}
-            className="message-container"
-            title={`Added at ${new Date(time).toLocaleTimeString()}`}
-          >
+          <li key={userID} className="message-container" title={`Added at ${new Date(time).toLocaleTimeString()}`}>
             <div className={selected ? "selected" : undefined}>
               <Image alt={prompt} image={image} onClick={() => handleImageVote(userID)} clickable={currentUserID !== userID} />
               <p>{prompt}</p>

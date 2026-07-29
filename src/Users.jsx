@@ -2,8 +2,6 @@ import React from 'react';
 import './Users.css';
 
 function Users({ users }) {
-  
-
   return (
     <div className="user-list">
       {[...Object.values(users)]

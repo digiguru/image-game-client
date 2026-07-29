@@ -32,7 +32,6 @@ const GameWindow = ({socket}) => {
       setGameState(gameState);
     };
     const usersListener = (users) => {
-      //TODO: This needs to use a session variable - duplicate usernames are possible
       setUsers(users);
       const selectUser = users.find(x => x.name === userName)
       console.log("GET users", userName, users, selectUser)
@@ -50,7 +49,6 @@ const GameWindow = ({socket}) => {
     }
 
     socket.on('gameState', gameStateListener);
-
     socket.on('users', usersListener);
     socket.on('reset-clients', resetListener);
 
@@ -60,41 +58,17 @@ const GameWindow = ({socket}) => {
       socket.off('reset-clients', resetListener);
     };
   }, [socket, userName, image]);
-  
-  
 
   return (
     <div className="game">
-        
-        {
-          {
-            'lobby': 
-              <>
-              <Lobby userName={userName} handleAddUser={handleAddUser} />
-              <Users users={users} />
-              </>,
-            'ideation':
-              <Ideation userName={userName} prompt={prompt} users={users} handleAddPrompt={handleAddPrompt} image={image} />,
-            'voting':
-              <Voting initialUsers={users} currentUserID={userID} socket={socket} />,
-            'results':
-              <Results users={users} currentUserID={userID} socket={socket} />,
-            'other':
-              <>
-                <p>Not sure how you got here</p>
-              </>
-          }[gameState || 'other']
-        }
-
-       
-       
-
+      {{
+        'lobby': <><Lobby userName={userName} handleAddUser={handleAddUser} /><Users users={users} /></>,
+        'ideation': <Ideation userName={userName} prompt={prompt} users={users} handleAddPrompt={handleAddPrompt} image={image} />,
+        'voting': <Voting initialUsers={users} currentUserID={userID} socket={socket} />,
+        'results': <Results users={users} currentUserID={userID} socket={socket} />,
+        'other': <><p>Not sure how you got here</p></>
+      }[gameState || 'other']}
     </div>
   );
 };
 export default GameWindow;
-
-
-
-
-
