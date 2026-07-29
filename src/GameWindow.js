@@ -6,7 +6,7 @@ import { Ideation } from './Ideation';
 import { Voting } from './Voting';
 import { Results } from './Results';
 
-const uuidv4 = require('uuid').v4;
+const id = globalThis.crypto.randomUUID();
 
 const GameWindow = ({socket}) => {
   const [gameState, setGameState] = useState("waiting for host...");
@@ -17,7 +17,6 @@ const GameWindow = ({socket}) => {
   const [image, setImage] = useState("");
  
   const handleAddUser = function (name) {
-    let id = uuidv4();
     setUserName(name);
     setUserID(id);
 
