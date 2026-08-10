@@ -19,6 +19,7 @@ describe('App', () => {
   let socket;
 
   beforeEach(() => {
+    vi.clearAllMocks();
     socket = createSocketMock();
     io.mockReturnValue(socket);
   });
