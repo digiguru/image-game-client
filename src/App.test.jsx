@@ -2,17 +2,16 @@ import { render, screen, waitFor } from '@testing-library/react';
 import io from 'socket.io-client';
 import App from './App';
 
-jest.mock('socket.io-client', () => ({
-  __esModule: true,
-  default: jest.fn()
+vi.mock('socket.io-client', () => ({
+  default: vi.fn(),
 }));
 
 function createSocketMock() {
   return {
-    emit: jest.fn(),
-    on: jest.fn(),
-    off: jest.fn(),
-    close: jest.fn()
+    emit: vi.fn(),
+    on: vi.fn(),
+    off: vi.fn(),
+    close: vi.fn(),
   };
 }
 
@@ -20,6 +19,7 @@ describe('App', () => {
   let socket;
 
   beforeEach(() => {
+    vi.clearAllMocks();
     socket = createSocketMock();
     io.mockReturnValue(socket);
   });
