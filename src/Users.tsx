@@ -1,10 +1,14 @@
-import React from 'react';
+import type { GameUser } from './types';
 import './Users.css';
 
-function Users({ users }) {
+interface UsersProps {
+  users: GameUser[];
+}
+
+function Users({ users }: UsersProps) {
   return (
     <div className="user-list">
-      {[...Object.values(users)]
+      {[...users]
         .sort((a, b) => a.name.localeCompare(b.name))
         .map((user) => (
           <div
@@ -14,8 +18,7 @@ function Users({ users }) {
           >
             <span className="user">{user.name}</span>
           </div>
-        ))
-      }
+        ))}
     </div>
   );
 }

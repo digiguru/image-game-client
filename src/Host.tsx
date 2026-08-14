@@ -1,17 +1,26 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type ChangeEvent } from 'react';
 import { createRoomID, getPlayerShareUrl } from './gameRoom';
+import type { GameSocket, GameState, GameUser, GeneratorName } from './types';
 import './Host.css';
 
-const Host = ({ socket, roomID }) => {
-  const [gameState, setGameState] = useState('lobby');
-  const [users, setUsers] = useState([]);
-  const [generator, setGenerator] = useState('Dall-e');
+interface HostProps {
+  socket: GameSocket;
+  roomID: string;
+}
+
+const GAME_STATES: GameState[] = ['lobby', 'ideation', 'voting', 'results'];
+const GENERATORS: GeneratorName[] = ['Stable Horde', 'Mock', 'Dall-e'];
+
+const Host = ({ socket, roomID }: HostProps) => {
+  const [gameState, setGameState] = useState<GameState>('lobby');
+  const [users, setUsers] = useState<GameUser[]>([]);
+  const [generator, setGenerator] = useState<GeneratorName>('Dall-e');
   const [seeReset, setSeeReset] = useState(false);
   const shareUrl = useMemo(() => getPlayerShareUrl(roomID), [roomID]);
 
   useEffect(() => {
-    const gameStateListener = setGameState;
-    const usersListener = setUsers;
+    const gameStateListener = (state: GameState) => setGameState(state);
+    const usersListener = (nextUsers: GameUser[]) => setUsers(nextUsers);
     socket.on('gameState', gameStateListener);
     socket.on('users', usersListener);
     socket.emit('getGameState');
@@ -22,8 +31,8 @@ const Host = ({ socket, roomID }) => {
     };
   }, [socket]);
 
-  const handleSetGenerator = (event) => {
-    const nextGenerator = event.target.value;
+  const handleSetGenerator = (event: ChangeEvent<HTMLInputElement>) => {
+    const nextGenerator = event.target.value as GeneratorName;
     setGenerator(nextGenerator);
     socket.emit('setGenerator', nextGenerator);
   };
@@ -41,7 +50,7 @@ const Host = ({ socket, roomID }) => {
         <p><a href={shareUrl}>Player join link</a></p>
         <button onClick={createNewRoom}>Create new room</button>
         <ul>
-          {['lobby', 'ideation', 'voting', 'results'].map((state) => (
+          {GAME_STATES.map((state) => (
             <li key={state}>
               <SelectGameState
                 label={state}
@@ -60,9 +69,14 @@ const Host = ({ socket, roomID }) => {
         <div>
           <h1>Image generators</h1>
           <div className="admin-generators">
-            <RadioGenerator label="Stable Horde" onChange={handleSetGenerator} generator={generator} />
-            <RadioGenerator label="Mock" onChange={handleSetGenerator} generator={generator} />
-            <RadioGenerator label="Dall-e" onChange={handleSetGenerator} generator={generator} />
+            {GENERATORS.map((name) => (
+              <RadioGenerator
+                key={name}
+                label={name}
+                onChange={handleSetGenerator}
+                generator={generator}
+              />
+            ))}
           </div>
         </div>
         <h1>Update images</h1>
@@ -74,7 +88,13 @@ const Host = ({ socket, roomID }) => {
   );
 };
 
-const SelectGameState = ({ label, currentGameState, handleClick }) => (
+interface SelectGameStateProps {
+  label: GameState;
+  currentGameState: GameState;
+  handleClick: (state: GameState) => void;
+}
+
+const SelectGameState = ({ label, currentGameState, handleClick }: SelectGameStateProps) => (
   <button
     className={currentGameState === label ? 'selected' : undefined}
     onClick={() => handleClick(label)}
@@ -83,7 +103,13 @@ const SelectGameState = ({ label, currentGameState, handleClick }) => (
   </button>
 );
 
-const RadioGenerator = ({ label, onChange, generator }) => (
+interface RadioGeneratorProps {
+  label: GeneratorName;
+  onChange: (event: ChangeEvent<HTMLInputElement>) => void;
+  generator: GeneratorName;
+}
+
+const RadioGenerator = ({ label, onChange, generator }: RadioGeneratorProps) => (
   <>
     <input id={label} type="radio" name="generator" onChange={onChange} value={label} checked={generator === label} />
     <label htmlFor={label}>{label}</label>

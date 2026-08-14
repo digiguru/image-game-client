@@ -1,10 +1,23 @@
+import type { ManagerOptions, SocketOptions } from 'socket.io-client';
+
 export const PRODUCTION_SERVER_URL = 'https://image-game-server.vercel.app';
+
+interface SocketConfigInput {
+  serverHostname?: string;
+  socketPath?: string;
+  browserHostname?: string;
+}
+
+export interface ResolvedSocketConfig {
+  serverUrl: string;
+  options: Partial<ManagerOptions & SocketOptions>;
+}
 
 export function resolveSocketConfig({
   serverHostname,
   socketPath,
   browserHostname,
-} = {}) {
+}: SocketConfigInput = {}): ResolvedSocketConfig {
   const hostname = browserHostname || 'localhost';
   const isLocal = hostname === 'localhost' || hostname === '127.0.0.1';
 
@@ -25,10 +38,10 @@ export function resolveSocketConfig({
   };
 }
 
-export function getSocketConfig() {
+export function getSocketConfig(): ResolvedSocketConfig {
   return resolveSocketConfig({
     serverHostname: import.meta.env.VITE_SERVER_HOSTNAME,
     socketPath: import.meta.env.VITE_SOCKET_PATH,
-    browserHostname: window.location.hostname,
+    browserHostname: globalThis.window.location.hostname,
   });
 }
