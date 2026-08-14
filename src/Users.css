@@ -1,26 +1,19 @@
 .user-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  padding: 0;
+  margin: 0 0 1rem;
+  list-style: none;
+}
 
-    display: grid;
-    grid-template-columns: repeat(8, auto);
-    
-    justify-content: space-around;
-    
-  }
-  
-  .user-container {
-    padding: 0.5em 1em;
-    background-color: rgb(96, 47, 152);
-  }
-  
-  .user, .date {
-    font-size: 1.2em;
-    color: #FFF;
-  }
-  
-  .user {
-    min-width: 120px;
-  }
-  
-  .user {
-    flex-grow: 1;
-  }
+.user-container {
+  padding: 0.5rem 0.85rem;
+  border-radius: 999px;
+  background: var(--primary);
+  color: #fff;
+}
+
+.user {
+  font-weight: 700;
+}
