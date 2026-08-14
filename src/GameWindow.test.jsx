@@ -17,6 +17,7 @@ function createSocketMock() {
 describe('GameWindow', () => {
   afterEach(() => {
     delete document.startViewTransition;
+    delete document.documentElement.dataset.gameTransitionDirection;
   });
 
   test('shows a visible connecting state before the server sends game state', () => {
@@ -41,7 +42,7 @@ describe('GameWindow', () => {
     expect(screen.getByLabelText('Game room TEST')).toHaveAttribute('data-game-state', 'lobby');
   });
 
-  test('uses a view transition when the server advances the game phase', () => {
+  test('animates right when the server advances to a state on the right', () => {
     const socket = createSocketMock();
     const startViewTransition = vi.fn((update) => {
       update();
@@ -59,6 +60,30 @@ describe('GameWindow', () => {
     });
 
     expect(startViewTransition).toHaveBeenCalledTimes(1);
+    expect(document.documentElement).toHaveAttribute('data-game-transition-direction', 'right');
+    expect(screen.getByTestId('game-state-card')).toHaveClass('game-state-card-ideation');
+    expect(screen.getByLabelText('Game room TEST')).toHaveAttribute('data-game-state', 'ideation');
+  });
+
+  test('animates left when the server moves back to a state on the left', () => {
+    const socket = createSocketMock();
+    const startViewTransition = vi.fn((update) => {
+      update();
+      return {};
+    });
+    document.startViewTransition = startViewTransition;
+
+    render(<GameWindow socket={socket} roomID="TEST" />);
+
+    act(() => {
+      socket.listeners.get('gameState')('voting');
+    });
+    act(() => {
+      socket.listeners.get('gameState')('ideation');
+    });
+
+    expect(startViewTransition).toHaveBeenCalledTimes(1);
+    expect(document.documentElement).toHaveAttribute('data-game-transition-direction', 'left');
     expect(screen.getByTestId('game-state-card')).toHaveClass('game-state-card-ideation');
     expect(screen.getByLabelText('Game room TEST')).toHaveAttribute('data-game-state', 'ideation');
   });
