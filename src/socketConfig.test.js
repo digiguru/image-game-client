@@ -12,11 +12,11 @@ describe('resolveSocketConfig', () => {
     });
   });
 
-  test('uses the Vercel Socket.IO function in production', () => {
+  test('uses the exact Vercel Socket.IO function route in production', () => {
     expect(resolveSocketConfig({ browserHostname: 'image-game-client.vercel.app' })).toEqual({
       serverUrl: PRODUCTION_SERVER_URL,
       options: {
-        path: '/api/socket-io/socket.io',
+        path: '/api/socket-io',
         transports: ['websocket'],
       },
     });

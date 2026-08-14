@@ -26,7 +26,7 @@ export function resolveSocketConfig({
   );
 
   const path = socketPath || (
-    isLocal ? '/socket.io' : '/api/socket-io/socket.io'
+    isLocal ? '/socket.io' : '/api/socket-io'
   );
 
   return {
