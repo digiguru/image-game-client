@@ -18,6 +18,50 @@ async function expectAccessible(page, label) {
   expect(summary, `${label} accessibility violations`).toEqual([]);
 }
 
+test('server dashboard creates a slug, keeps its page open, remembers the game and opens phase shortcuts', async ({ browser }) => {
+  const context = await browser.newContext();
+  const dashboard = await context.newPage();
+
+  try {
+    await dashboard.goto('http://127.0.0.1:3000/');
+    await expect(dashboard.getByRole('heading', { name: 'Image Game Server' })).toBeVisible();
+
+    const hostPagePromise = context.waitForEvent('page');
+    await dashboard.getByRole('button', { name: 'Start new game' }).click();
+    const host = await hostPagePromise;
+
+    const status = dashboard.getByRole('status');
+    await expect(status).toContainText(/Game [A-F0-9]{8} created in the lobby/);
+    const statusText = await status.textContent();
+    const roomID = statusText.match(/[A-F0-9]{8}/)?.[0];
+    expect(roomID).toBeTruthy();
+
+    await expect(dashboard).toHaveURL('http://127.0.0.1:3000/');
+    await expect(dashboard.getByRole('combobox', { name: 'Game' })).toHaveValue(roomID);
+
+    await host.waitForLoadState('domcontentloaded');
+    await expect(host).toHaveURL(new RegExp(`/host\\?room=${roomID}$`));
+    await expect(host.getByText(roomID)).toBeVisible();
+    await expect(host.getByRole('heading', { name: 'Admin - lobby' })).toBeVisible();
+
+    await dashboard.getByRole('button', { name: 'Open game details' }).click();
+    await expect(dashboard).toHaveURL(`http://127.0.0.1:3000/room/${roomID}`);
+    await expect(dashboard.getByRole('heading', { name: `Game ${roomID}` })).toBeVisible();
+    await expect(dashboard.getByRole('heading', { name: 'Players & images' })).toBeVisible();
+
+    const phasePagePromise = context.waitForEvent('page');
+    await dashboard.getByRole('link', { name: 'Ideation' }).click();
+    const ideationHost = await phasePagePromise;
+    await ideationHost.waitForLoadState('domcontentloaded');
+
+    await expect(ideationHost.getByRole('heading', { name: 'Admin - ideation' })).toBeVisible();
+    await expect(ideationHost).toHaveURL(new RegExp(`/host\\?room=${roomID}$`));
+    await expect(dashboard).toHaveURL(`http://127.0.0.1:3000/room/${roomID}`);
+  } finally {
+    await context.close();
+  }
+});
+
 test('host and two players can complete an accessible full Mock-provider game', async ({ browser }) => {
   const roomID = `E2E${Date.now().toString(36)}`;
   const hostContext = await browser.newContext();

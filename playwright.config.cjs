@@ -14,7 +14,7 @@ module.exports = defineConfig({
     ? [['line'], ['html', { outputFolder: 'playwright-report', open: 'never' }]]
     : 'list',
   use: {
-    baseURL: 'http://127.0.0.1:4173',
+    baseURL: 'http://127.0.0.1:5173',
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
@@ -36,8 +36,8 @@ module.exports = defineConfig({
       stderr: 'pipe',
     },
     {
-      command: 'npm run start -- --host 127.0.0.1 --port 4173',
-      url: 'http://127.0.0.1:4173',
+      command: 'npm run start -- --host 127.0.0.1 --port 5173',
+      url: 'http://127.0.0.1:5173',
       reuseExistingServer: !isCI,
       timeout: 30_000,
       stdout: 'pipe',

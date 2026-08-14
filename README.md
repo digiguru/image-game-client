@@ -16,7 +16,11 @@ npm start
 
 Vite uses its normal local development address (typically `http://localhost:5173`). Run `digiguru/image-game-server` separately on port `3000`; the client automatically uses `http://localhost:3000` when running locally.
 
-Use `/host?room=ROOM_ID` for host controls and `/?room=ROOM_ID` for players. Without a room query parameter, the backwards-compatible `default` room is used.
+Create and select games from the server dashboard. Each game receives an 8-character slug. The server opens `/host?room=ROOM_ID` in a new tab for host controls and players join with `/?room=ROOM_ID`.
+
+The server game-detail page can also open host phase shortcuts such as `/host?room=ROOM_ID&state=ideation`. The client applies a valid host-only phase shortcut once after joining the room, then removes the `state` query parameter so reconnecting cannot unexpectedly reset the phase.
+
+Without a room query parameter, the backwards-compatible `default` room is used.
 
 ## Environment variables
 

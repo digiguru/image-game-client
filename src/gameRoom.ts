@@ -1,4 +1,7 @@
+import type { GameState } from './types';
+
 export const DEFAULT_ROOM_ID = 'default';
+const GAME_STATES: GameState[] = ['lobby', 'ideation', 'voting', 'results'];
 
 export function normaliseRoomID(value: unknown): string {
   if (typeof value !== 'string') return DEFAULT_ROOM_ID;
@@ -11,6 +14,21 @@ export function getRoomID(search = globalThis.window.location.search): string {
   return normaliseRoomID(params.get('room'));
 }
 
+export function getRequestedHostState(
+  search = globalThis.window.location.search,
+  pathname = globalThis.window.location.pathname,
+): GameState | null {
+  if (pathname !== '/host') return null;
+  const state = new globalThis.URLSearchParams(search).get('state');
+  return GAME_STATES.includes(state as GameState) ? state as GameState : null;
+}
+
+export function clearRequestedHostState(location = globalThis.window.location): void {
+  const url = new globalThis.URL(location.href);
+  url.searchParams.delete('state');
+  globalThis.window.history.replaceState({}, '', `${url.pathname}${url.search}${url.hash}`);
+}
+
 export function getPlayerShareUrl(
   roomID: string,
   location: Pick<Location, 'origin'> = globalThis.window.location,
@@ -18,8 +36,4 @@ export function getPlayerShareUrl(
   const url = new globalThis.URL(location.origin);
   url.searchParams.set('room', normaliseRoomID(roomID));
   return url.toString();
-}
-
-export function createRoomID(): string {
-  return globalThis.crypto.randomUUID().replaceAll('-', '').slice(0, 8).toUpperCase();
 }
