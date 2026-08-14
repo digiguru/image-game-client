@@ -101,12 +101,14 @@ test('results render players in ascending vote order so the winner appears last'
   expect(items[1]).toHaveTextContent('1 votes');
 });
 
-test('host controls expose phase state, provider selection and reset confirmation', async () => {
+test('host controls expose slug, phase state, provider selection and reset confirmation', async () => {
   const user = userEvent.setup();
   const socket = socketMock();
   render(<Host socket={socket} roomID="ROOM42" />);
 
   expect(screen.getByText('ROOM42')).toBeInTheDocument();
+  expect(screen.getByText(/Create and switch games from the Image Game Server dashboard/)).toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: 'Create new room' })).not.toBeInTheDocument();
   expect(screen.getByRole('link', { name: 'Player join link' })).toHaveAttribute('href', expect.stringContaining('room=ROOM42'));
 
   const lobbyButton = screen.getByRole('button', { name: 'LOBBY' });
