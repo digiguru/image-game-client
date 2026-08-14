@@ -66,6 +66,7 @@ const GameWindow = ({ socket, roomID }: GameWindowProps) => {
       }
 
       const commitState = () => {
+        document.documentElement.dataset.gameState = state;
         flushSync(() => setGameState(state));
         gameStateRef.current = state;
       };
@@ -108,6 +109,8 @@ const GameWindow = ({ socket, roomID }: GameWindowProps) => {
       socket.off('users', usersListener);
       socket.off('reset-clients', resetListener);
       socket.off('protocolError', errorListener);
+      delete document.documentElement.dataset.gameState;
+      delete document.documentElement.dataset.gameTransitionDirection;
     };
   }, [socket, userID]);
 
