@@ -13,6 +13,25 @@ interface GameWindowProps {
   roomID: string;
 }
 
+const STATE_TRANSITIONS: Record<GameState, { title: string; subtitle: string }> = {
+  lobby: {
+    title: 'Welcome to the lobby',
+    subtitle: 'Gather the players',
+  },
+  ideation: {
+    title: 'Time to imagine',
+    subtitle: 'Create something brilliant',
+  },
+  voting: {
+    title: 'Voting is open',
+    subtitle: 'Choose your favourites',
+  },
+  results: {
+    title: 'The results are in',
+    subtitle: 'Time to celebrate',
+  },
+};
+
 const GameWindow = ({ socket, roomID }: GameWindowProps) => {
   const [gameState, setGameState] = useState<string | null>(null);
   const [users, setUsers] = useState<GameUser[]>([]);
@@ -84,15 +103,49 @@ const GameWindow = ({ socket, roomID }: GameWindowProps) => {
     results: <Results users={users} />,
   };
 
-  const activeScreen = gameState && gameState in screens
-    ? screens[gameState as GameState]
+  const knownGameState = gameState && gameState in screens
+    ? gameState as GameState
     : null;
+  const activeScreen = knownGameState ? screens[knownGameState] : null;
+  const transition = knownGameState ? STATE_TRANSITIONS[knownGameState] : null;
 
   return (
-    <section className="game" data-room={roomID} aria-label={`Game room ${roomID}`}>
+    <section
+      className="game"
+      data-room={roomID}
+      data-game-state={knownGameState ?? undefined}
+      aria-label={`Game room ${roomID}`}
+    >
       {protocolError && <p className="alert" role="alert">{protocolError}</p>}
       {!gameState && <p role="status">Connecting to the game server…</p>}
-      {gameState && (activeScreen || <p role="status">Unknown game state: {gameState}</p>)}
+      {knownGameState && transition && (
+        <div key={knownGameState} className={`game-stage game-stage-${knownGameState}`}>
+          <div className="game-stage-transition" aria-hidden="true">
+            <div className="game-stage-orbit">
+              <span className="game-stage-orb" />
+              <span className="game-stage-ring game-stage-ring-one" />
+              <span className="game-stage-ring game-stage-ring-two" />
+            </div>
+            <div className="game-stage-transition-copy">
+              <span className="game-stage-kicker">{knownGameState}</span>
+              <strong>{transition.title}</strong>
+              <span>{transition.subtitle}</span>
+            </div>
+            {knownGameState === 'results' && (
+              <div className="game-stage-sparkles">
+                {Array.from({ length: 12 }, (_, index) => (
+                  <span key={index} style={{ '--spark-index': index } as React.CSSProperties} />
+                ))}
+              </div>
+            )}
+          </div>
+          <div className="game-stage-content">{activeScreen}</div>
+          <p className="game-stage-live" role="status" aria-live="polite">
+            Game phase: {transition.title}
+          </p>
+        </div>
+      )}
+      {gameState && !knownGameState && <p role="status">Unknown game state: {gameState}</p>}
     </section>
   );
 };
