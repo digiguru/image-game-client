@@ -45,7 +45,15 @@
   transform-origin: 50% 50%;
   view-transition-name: game-state-card;
   will-change: transform, opacity, filter;
-  animation: game-card-fallback-in 480ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: game-card-fallback-in 720ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+html[data-game-transition-direction='left'] .game-state-card {
+  animation-name: game-card-fallback-in-left;
+}
+
+html[data-game-transition-direction='right'] .game-state-card {
+  animation-name: game-card-fallback-in-right;
 }
 
 .game-state-card::before {
@@ -103,7 +111,7 @@
 ::view-transition-group(game-state-card) {
   z-index: 50;
   overflow: visible;
-  animation-duration: 560ms;
+  animation-duration: 840ms;
   perspective: 1400px;
   transform-style: preserve-3d;
 }
@@ -114,19 +122,29 @@
   isolation: auto;
 }
 
-::view-transition-old(game-state-card) {
-  transform-origin: 50% 50%;
-  backface-visibility: hidden;
-  animation: game-card-3d-out 500ms cubic-bezier(0.55, 0.02, 0.38, 0.94) both;
-}
-
+::view-transition-old(game-state-card),
 ::view-transition-new(game-state-card) {
   transform-origin: 50% 50%;
   backface-visibility: hidden;
-  animation: game-card-3d-in 560ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-@keyframes game-card-3d-out {
+html[data-game-transition-direction='left']::view-transition-old(game-state-card) {
+  animation: game-card-3d-out-left 750ms cubic-bezier(0.55, 0.02, 0.38, 0.94) both;
+}
+
+html[data-game-transition-direction='left']::view-transition-new(game-state-card) {
+  animation: game-card-3d-in-left 840ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+html[data-game-transition-direction='right']::view-transition-old(game-state-card) {
+  animation: game-card-3d-out-right 750ms cubic-bezier(0.55, 0.02, 0.38, 0.94) both;
+}
+
+html[data-game-transition-direction='right']::view-transition-new(game-state-card) {
+  animation: game-card-3d-in-right 840ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes game-card-3d-out-left {
   0% {
     opacity: 1;
     filter: blur(0);
@@ -147,7 +165,7 @@
   }
 }
 
-@keyframes game-card-3d-in {
+@keyframes game-card-3d-in-left {
   0% {
     opacity: 0;
     filter: blur(10px);
@@ -169,7 +187,67 @@
   }
 }
 
+@keyframes game-card-3d-out-right {
+  0% {
+    opacity: 1;
+    filter: blur(0);
+    transform: perspective(1400px) translate3d(0, 0, 0) rotateX(0) rotateY(0) rotateZ(0) skewX(0) scale(1);
+  }
+  22% {
+    opacity: 0.93;
+    transform: perspective(1400px) translate3d(1.5vw, -1vh, 85px) rotateX(-3deg) rotateY(9deg) rotateZ(1.5deg) skewX(1deg) scale(1.015);
+  }
+  55% {
+    opacity: 0.55;
+    filter: blur(2px);
+  }
+  100% {
+    opacity: 0;
+    filter: blur(11px);
+    transform: perspective(1400px) translate3d(108vw, -16vh, -620px) rotateX(24deg) rotateY(48deg) rotateZ(16deg) skewX(8deg) scale(0.7);
+  }
+}
+
+@keyframes game-card-3d-in-right {
+  0% {
+    opacity: 0;
+    filter: blur(10px);
+    transform: perspective(1400px) translate3d(-96vw, 13vh, -620px) rotateX(-20deg) rotateY(-44deg) rotateZ(-15deg) skewX(-7deg) scale(0.7);
+  }
+  36% {
+    opacity: 0.72;
+    filter: blur(2px);
+  }
+  72% {
+    opacity: 1;
+    filter: blur(0);
+    transform: perspective(1400px) translate3d(1.5vw, -0.7vh, 45px) rotateX(2deg) rotateY(4deg) rotateZ(1deg) skewX(0.5deg) scale(1.015);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0);
+    transform: perspective(1400px) translate3d(0, 0, 0) rotateX(0) rotateY(0) rotateZ(0) skewX(0) scale(1);
+  }
+}
+
 @keyframes game-card-fallback-in {
+  0% {
+    opacity: 0;
+    filter: blur(7px);
+    transform: perspective(1400px) translate3d(0, 4vh, -260px) rotateX(-10deg) scale(0.88);
+  }
+  70% {
+    opacity: 1;
+    filter: blur(0);
+    transform: perspective(1400px) translate3d(0, -0.3vh, 24px) rotateX(1deg) scale(1.008);
+  }
+  100% {
+    opacity: 1;
+    transform: perspective(1400px) translate3d(0, 0, 0) rotateX(0) scale(1);
+  }
+}
+
+@keyframes game-card-fallback-in-left {
   0% {
     opacity: 0;
     filter: blur(7px);
@@ -179,6 +257,23 @@
     opacity: 1;
     filter: blur(0);
     transform: perspective(1400px) translate3d(-0.7vw, -0.3vh, 24px) rotateX(1deg) rotateY(-2deg) rotateZ(-0.5deg) skewX(0) scale(1.008);
+  }
+  100% {
+    opacity: 1;
+    transform: perspective(1400px) translate3d(0, 0, 0) rotateX(0) rotateY(0) rotateZ(0) skewX(0) scale(1);
+  }
+}
+
+@keyframes game-card-fallback-in-right {
+  0% {
+    opacity: 0;
+    filter: blur(7px);
+    transform: perspective(1400px) translate3d(-18vw, 4vh, -260px) rotateX(-10deg) rotateY(-20deg) rotateZ(-5deg) skewX(-3deg) scale(0.88);
+  }
+  70% {
+    opacity: 1;
+    filter: blur(0);
+    transform: perspective(1400px) translate3d(0.7vw, -0.3vh, 24px) rotateX(1deg) rotateY(2deg) rotateZ(0.5deg) skewX(0) scale(1.008);
   }
   100% {
     opacity: 1;
