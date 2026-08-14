@@ -1,0 +1,1 @@
+The GameWindow regression suite verifies that authoritative Socket.IO gameState changes use the browser View Transitions API when available. Visual motion itself is defined in GameWindow.css and is exercised by the existing Chromium full-stack Playwright journey.
