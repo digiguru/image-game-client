@@ -41,6 +41,22 @@ describe('App', () => {
     expect(socket.emit).toHaveBeenCalledWith('getUsers');
   });
 
+  test('applies a server dashboard phase shortcut once and removes it from the URL', async () => {
+    window.history.replaceState({}, '', '/host?room=ROOM42&state=ideation');
+    render(<App />);
+    await waitFor(() => expect(socket.listeners.has('connect')).toBe(true));
+
+    socket.listeners.get('connect')();
+
+    expect(socket.emit).toHaveBeenCalledWith('joinGame', { roomID: 'ROOM42' });
+    expect(socket.emit).toHaveBeenCalledWith('setGameState', 'ideation');
+    expect(window.location.pathname + window.location.search).toBe('/host?room=ROOM42');
+
+    socket.emit.mockClear();
+    socket.listeners.get('connect')();
+    expect(socket.emit).not.toHaveBeenCalledWith('setGameState', 'ideation');
+  });
+
   test('closes the socket when unmounted', async () => {
     const { unmount } = render(<App />);
     await waitFor(() => expect(io).toHaveBeenCalledTimes(1));
