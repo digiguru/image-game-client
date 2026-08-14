@@ -1,4 +1,5 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { flushSync } from 'react-dom';
 import './GameWindow.css';
 import Users from './Users';
 import { Lobby } from './Lobby';
@@ -13,27 +14,20 @@ interface GameWindowProps {
   roomID: string;
 }
 
-const STATE_TRANSITIONS: Record<GameState, { title: string; subtitle: string }> = {
-  lobby: {
-    title: 'Welcome to the lobby',
-    subtitle: 'Gather the players',
-  },
-  ideation: {
-    title: 'Time to imagine',
-    subtitle: 'Create something brilliant',
-  },
-  voting: {
-    title: 'Voting is open',
-    subtitle: 'Choose your favourites',
-  },
-  results: {
-    title: 'The results are in',
-    subtitle: 'Time to celebrate',
-  },
+const STATE_LABELS: Record<GameState, string> = {
+  lobby: 'Lobby',
+  ideation: 'Ideation',
+  voting: 'Voting',
+  results: 'Results',
 };
+
+function prefersReducedMotion() {
+  return globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+}
 
 const GameWindow = ({ socket, roomID }: GameWindowProps) => {
   const [gameState, setGameState] = useState<string | null>(null);
+  const gameStateRef = useRef<string | null>(null);
   const [users, setUsers] = useState<GameUser[]>([]);
   const [userName, setUserName] = useState('');
   const [userID] = useState(() => getPlayerID());
@@ -52,7 +46,25 @@ const GameWindow = ({ socket, roomID }: GameWindowProps) => {
   };
 
   useEffect(() => {
-    const gameStateListener = (state: GameState) => setGameState(state);
+    const gameStateListener = (state: GameState) => {
+      const previousState = gameStateRef.current;
+      const commitState = () => {
+        flushSync(() => setGameState(state));
+        gameStateRef.current = state;
+      };
+
+      if (
+        previousState
+        && previousState !== state
+        && !prefersReducedMotion()
+        && typeof document.startViewTransition === 'function'
+      ) {
+        document.startViewTransition(commitState);
+        return;
+      }
+
+      commitState();
+    };
     const usersListener = (nextUsers: GameUser[]) => {
       setUsers(nextUsers);
       const currentUser = nextUsers.find((user) => user.userID === userID);
@@ -107,7 +119,6 @@ const GameWindow = ({ socket, roomID }: GameWindowProps) => {
     ? gameState as GameState
     : null;
   const activeScreen = knownGameState ? screens[knownGameState] : null;
-  const transition = knownGameState ? STATE_TRANSITIONS[knownGameState] : null;
 
   return (
     <section
@@ -118,32 +129,20 @@ const GameWindow = ({ socket, roomID }: GameWindowProps) => {
     >
       {protocolError && <p className="alert" role="alert">{protocolError}</p>}
       {!gameState && <p role="status">Connecting to the game server…</p>}
-      {knownGameState && transition && (
-        <div key={knownGameState} className={`game-stage game-stage-${knownGameState}`}>
-          <div className="game-stage-transition" aria-hidden="true">
-            <div className="game-stage-orbit">
-              <span className="game-stage-orb" />
-              <span className="game-stage-ring game-stage-ring-one" />
-              <span className="game-stage-ring game-stage-ring-two" />
-            </div>
-            <div className="game-stage-transition-copy">
-              <span className="game-stage-kicker">{knownGameState}</span>
-              <strong>{transition.title}</strong>
-              <span>{transition.subtitle}</span>
-            </div>
-            {knownGameState === 'results' && (
-              <div className="game-stage-sparkles">
-                {Array.from({ length: 12 }, (_, index) => (
-                  <span key={index} style={{ '--spark-index': index } as React.CSSProperties} />
-                ))}
-              </div>
-            )}
+      {knownGameState && (
+        <article
+          key={knownGameState}
+          className={`game-state-card game-state-card-${knownGameState}`}
+          data-testid="game-state-card"
+        >
+          <div className="game-state-edge" aria-hidden="true">
+            <span>{STATE_LABELS[knownGameState]}</span>
           </div>
-          <div className="game-stage-content">{activeScreen}</div>
-          <p className="game-stage-live" role="status" aria-live="polite">
-            Game phase: {transition.title}
+          <div className="game-state-content">{activeScreen}</div>
+          <p className="game-state-live" role="status" aria-live="polite">
+            Game phase: {STATE_LABELS[knownGameState]}
           </p>
-        </div>
+        </article>
       )}
       {gameState && !knownGameState && <p role="status">Unknown game state: {gameState}</p>}
     </section>
