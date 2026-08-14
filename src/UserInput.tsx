@@ -10,18 +10,28 @@ const UserInput = ({ onAddUser }: UserInputProps) => {
 
   const submitForm = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    onAddUser(name);
+    const trimmedName = name.trim();
+    if (!trimmedName) return;
+    onAddUser(trimmedName);
     setName('');
   };
 
   return (
-    <form onSubmit={submitForm}>
-      <input
-        autoFocus
-        value={name}
-        placeholder="Type your name"
-        onChange={(event) => setName(event.currentTarget.value)}
-      />
+    <form className="message-form" onSubmit={submitForm}>
+      <label htmlFor="player-name">Your name</label>
+      <div className="message-form-row">
+        <input
+          id="player-name"
+          autoComplete="nickname"
+          autoFocus
+          maxLength={60}
+          required
+          value={name}
+          placeholder="Type your name"
+          onChange={(event) => setName(event.currentTarget.value)}
+        />
+        <button type="submit">Join game</button>
+      </div>
     </form>
   );
 };
