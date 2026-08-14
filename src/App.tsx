@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { io } from 'socket.io-client';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import GameWindow from './GameWindow';
 import Host from './Host';
 import { getSocketConfig } from './socketConfig';
-import { getRoomID } from './gameRoom';
+import { clearRequestedHostState, getRequestedHostState, getRoomID } from './gameRoom';
 import type { GameSocket } from './types';
 import './App.css';
 
@@ -14,6 +14,8 @@ function App() {
   const [socket, setSocket] = useState<GameSocket | null>(null);
   const [connectionState, setConnectionState] = useState<ConnectionState>('connecting');
   const roomID = getRoomID();
+  const requestedHostState = getRequestedHostState();
+  const appliedRequestedState = useRef(false);
 
   useEffect(() => {
     const { serverUrl, options } = getSocketConfig();
@@ -22,6 +24,13 @@ function App() {
     const syncRoom = () => {
       setConnectionState('connected');
       newSocket.emit('joinGame', { roomID });
+
+      if (requestedHostState && !appliedRequestedState.current) {
+        newSocket.emit('setGameState', requestedHostState);
+        appliedRequestedState.current = true;
+        clearRequestedHostState();
+      }
+
       newSocket.emit('getGameState');
       newSocket.emit('getUsers');
     };
@@ -35,7 +44,7 @@ function App() {
       newSocket.off('connect', syncRoom);
       newSocket.close();
     };
-  }, [roomID]);
+  }, [requestedHostState, roomID]);
 
   return (
     <div className="App">
