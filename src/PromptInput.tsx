@@ -10,18 +10,27 @@ const PromptInput = ({ onAddPrompt }: PromptInputProps) => {
 
   const submitForm = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    onAddPrompt(prompt);
+    const trimmedPrompt = prompt.trim();
+    if (!trimmedPrompt) return;
+    onAddPrompt(trimmedPrompt);
     setPrompt('');
   };
 
   return (
-    <form onSubmit={submitForm}>
-      <input
-        autoFocus
-        value={prompt}
-        placeholder="Type your prompt"
-        onChange={(event) => setPrompt(event.currentTarget.value)}
-      />
+    <form className="message-form" onSubmit={submitForm}>
+      <label htmlFor="image-prompt">Image prompt</label>
+      <div className="message-form-row">
+        <input
+          id="image-prompt"
+          autoFocus
+          maxLength={1000}
+          required
+          value={prompt}
+          placeholder="Type your prompt"
+          onChange={(event) => setPrompt(event.currentTarget.value)}
+        />
+        <button type="submit">Create image</button>
+      </div>
     </form>
   );
 };
