@@ -37,8 +37,11 @@ jobs:
       - name: Lint
         run: npm run lint
 
-      - name: Run tests
-        run: npm test
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test with coverage thresholds
+        run: npm run test:coverage
         env:
           CI: true
 
