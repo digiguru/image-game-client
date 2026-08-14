@@ -2,6 +2,12 @@ import AxeBuilder from '@axe-core/playwright';
 import { test, expect } from '@playwright/test';
 
 const WCAG_TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'];
+const PHASE_BANNER_COLOURS = {
+  lobby: 'rgb(36, 87, 197)',
+  ideation: 'rgb(124, 58, 237)',
+  voting: 'rgb(217, 119, 6)',
+  results: 'rgb(21, 128, 61)',
+};
 
 async function expectAccessible(page, label) {
   const results = await new AxeBuilder({ page })
@@ -16,6 +22,13 @@ async function expectAccessible(page, label) {
   }));
 
   expect(summary, `${label} accessibility violations`).toEqual([]);
+}
+
+async function expectBannerColour(page, phase) {
+  await expect.poll(
+    () => page.locator('.app-header').evaluate((element) => getComputedStyle(element).backgroundColor),
+    { message: `${phase} banner should match the game phase colour` },
+  ).toBe(PHASE_BANNER_COLOURS[phase]);
 }
 
 test('server dashboard creates a slug, keeps its page open, remembers the game and opens phase shortcuts', async ({ browser }) => {
@@ -43,6 +56,7 @@ test('server dashboard creates a slug, keeps its page open, remembers the game a
     await expect(host).toHaveURL(new RegExp(`/host\\?room=${roomID}$`));
     await expect(host.getByText(roomID)).toBeVisible();
     await expect(host.getByRole('heading', { name: 'Admin - lobby' })).toBeVisible();
+    await expectBannerColour(host, 'lobby');
 
     await dashboard.getByRole('button', { name: 'Open game details' }).click();
     await expect(dashboard).toHaveURL(`http://127.0.0.1:3000/room/${roomID}`);
@@ -55,6 +69,7 @@ test('server dashboard creates a slug, keeps its page open, remembers the game a
     await ideationHost.waitForLoadState('domcontentloaded');
 
     await expect(ideationHost.getByRole('heading', { name: 'Admin - ideation' })).toBeVisible();
+    await expectBannerColour(ideationHost, 'ideation');
     await expect(ideationHost).toHaveURL(new RegExp(`/host\\?room=${roomID}$`));
     await expect(dashboard).toHaveURL(`http://127.0.0.1:3000/room/${roomID}`);
   } finally {
@@ -79,6 +94,8 @@ test('host and two players can complete an accessible full Mock-provider game', 
     ]);
 
     await expect(host.getByRole('heading', { name: 'Admin - lobby' })).toBeVisible();
+    await expectBannerColour(host, 'lobby');
+    await expectBannerColour(alice, 'lobby');
     await expectAccessible(host, 'host lobby');
     await host.getByLabel('Mock').check();
 
@@ -96,6 +113,8 @@ test('host and two players can complete an accessible full Mock-provider game', 
     await host.getByRole('button', { name: 'IDEATION' }).click();
     await expect(alice.getByRole('textbox', { name: 'Image prompt' })).toBeVisible();
     await expect(bob.getByRole('textbox', { name: 'Image prompt' })).toBeVisible();
+    await expectBannerColour(host, 'ideation');
+    await expectBannerColour(alice, 'ideation');
     await expectAccessible(alice, 'ideation');
 
     await alice.getByRole('textbox', { name: 'Image prompt' }).fill('Alice robot');
@@ -109,6 +128,8 @@ test('host and two players can complete an accessible full Mock-provider game', 
     await host.getByRole('button', { name: 'VOTING' }).click();
     await expect(alice.getByRole('heading', { name: 'Choose up to 3 images to vote for' })).toBeVisible();
     await expect(bob.getByRole('heading', { name: 'Choose up to 3 images to vote for' })).toBeVisible();
+    await expectBannerColour(host, 'voting');
+    await expectBannerColour(alice, 'voting');
     await expectAccessible(alice, 'voting');
 
     await alice.getByRole('button', { name: 'Vote for Bob castle' }).click();
@@ -117,6 +138,8 @@ test('host and two players can complete an accessible full Mock-provider game', 
     await host.getByRole('button', { name: 'RESULTS' }).click();
     await expect(alice.getByRole('heading', { name: 'Results' })).toBeVisible();
     await expect(bob.getByRole('heading', { name: 'Results' })).toBeVisible();
+    await expectBannerColour(host, 'results');
+    await expectBannerColour(alice, 'results');
     await expect(alice.locator('.results')).toContainText('Alice');
     await expect(alice.locator('.results')).toContainText('Bob');
     await expect(alice.locator('.results')).toContainText('1 votes');
