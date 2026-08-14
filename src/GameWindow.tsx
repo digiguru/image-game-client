@@ -1,4 +1,5 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { flushSync } from 'react-dom';
 import './GameWindow.css';
 import Users from './Users';
 import { Lobby } from './Lobby';
@@ -13,8 +14,20 @@ interface GameWindowProps {
   roomID: string;
 }
 
+const STATE_LABELS: Record<GameState, string> = {
+  lobby: 'Lobby',
+  ideation: 'Ideation',
+  voting: 'Voting',
+  results: 'Results',
+};
+
+function prefersReducedMotion() {
+  return globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+}
+
 const GameWindow = ({ socket, roomID }: GameWindowProps) => {
   const [gameState, setGameState] = useState<string | null>(null);
+  const gameStateRef = useRef<string | null>(null);
   const [users, setUsers] = useState<GameUser[]>([]);
   const [userName, setUserName] = useState('');
   const [userID] = useState(() => getPlayerID());
@@ -33,7 +46,25 @@ const GameWindow = ({ socket, roomID }: GameWindowProps) => {
   };
 
   useEffect(() => {
-    const gameStateListener = (state: GameState) => setGameState(state);
+    const gameStateListener = (state: GameState) => {
+      const previousState = gameStateRef.current;
+      const commitState = () => {
+        flushSync(() => setGameState(state));
+        gameStateRef.current = state;
+      };
+
+      if (
+        previousState
+        && previousState !== state
+        && !prefersReducedMotion()
+        && typeof document.startViewTransition === 'function'
+      ) {
+        document.startViewTransition(commitState);
+        return;
+      }
+
+      commitState();
+    };
     const usersListener = (nextUsers: GameUser[]) => {
       setUsers(nextUsers);
       const currentUser = nextUsers.find((user) => user.userID === userID);
@@ -84,15 +115,36 @@ const GameWindow = ({ socket, roomID }: GameWindowProps) => {
     results: <Results users={users} />,
   };
 
-  const activeScreen = gameState && gameState in screens
-    ? screens[gameState as GameState]
+  const knownGameState = gameState && gameState in screens
+    ? gameState as GameState
     : null;
+  const activeScreen = knownGameState ? screens[knownGameState] : null;
 
   return (
-    <section className="game" data-room={roomID} aria-label={`Game room ${roomID}`}>
+    <section
+      className="game"
+      data-room={roomID}
+      data-game-state={knownGameState ?? undefined}
+      aria-label={`Game room ${roomID}`}
+    >
       {protocolError && <p className="alert" role="alert">{protocolError}</p>}
       {!gameState && <p role="status">Connecting to the game server…</p>}
-      {gameState && (activeScreen || <p role="status">Unknown game state: {gameState}</p>)}
+      {knownGameState && (
+        <article
+          key={knownGameState}
+          className={`game-state-card game-state-card-${knownGameState}`}
+          data-testid="game-state-card"
+        >
+          <div className="game-state-edge" aria-hidden="true">
+            <span>{STATE_LABELS[knownGameState]}</span>
+          </div>
+          <div className="game-state-content">{activeScreen}</div>
+          <p className="game-state-live" role="status" aria-live="polite">
+            Game phase: {STATE_LABELS[knownGameState]}
+          </p>
+        </article>
+      )}
+      {gameState && !knownGameState && <p role="status">Unknown game state: {gameState}</p>}
     </section>
   );
 };
