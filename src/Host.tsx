@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type ChangeEvent } from 'react';
-import { createRoomID, getPlayerShareUrl } from './gameRoom';
+import { getPlayerShareUrl } from './gameRoom';
 import type { GameSocket, GameState, GameUser, GeneratorName } from './types';
 import './Host.css';
 
@@ -37,19 +37,14 @@ const Host = ({ socket, roomID }: HostProps) => {
     socket.emit('setGenerator', nextGenerator);
   };
 
-  const createNewRoom = () => {
-    const nextRoom = createRoomID();
-    globalThis.window.location.assign(`/host?room=${nextRoom}`);
-  };
-
   return (
     <section className="admin" aria-label="Host controls">
       <div className="admin-menu">
         <div>
           <h1>Admin - {gameState}</h1>
-          <p><strong>Room:</strong> <code>{roomID}</code></p>
+          <p><strong>Game slug:</strong> <code>{roomID}</code></p>
           <p><a href={shareUrl}>Player join link</a></p>
-          <button type="button" className="secondary" onClick={createNewRoom}>Create new room</button>
+          <p className="host-note">Create and switch games from the Image Game Server dashboard.</p>
         </div>
         <nav aria-label="Game phase">
           <ul>
