@@ -11,7 +11,7 @@ const GameWindow = ({ socket, roomID }) => {
   const [gameState, setGameState] = useState(null);
   const [users, setUsers] = useState([]);
   const [userName, setUserName] = useState('');
-  const [userID, setUserID] = useState(() => getPlayerID());
+  const [userID] = useState(() => getPlayerID());
   const [prompt, addPrompt] = useState('');
   const [image, setImage] = useState('');
   const [protocolError, setProtocolError] = useState('');
