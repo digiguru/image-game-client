@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { getPlayerShareUrl } from './gameRoom';
+import { createRoomID, getPlayerShareUrl } from './gameRoom';
 import './Host.css';
 
 const Host = ({ socket, roomID }) => {
@@ -28,12 +28,18 @@ const Host = ({ socket, roomID }) => {
     socket.emit('setGenerator', nextGenerator);
   };
 
+  const createNewRoom = () => {
+    const nextRoom = createRoomID();
+    globalThis.window.location.assign(`/host?room=${nextRoom}`);
+  };
+
   return (
     <div className="admin">
       <div className="admin-menu">
         <h1>Admin - {gameState}</h1>
         <p><strong>Room:</strong> {roomID}</p>
         <p><a href={shareUrl}>Player join link</a></p>
+        <button onClick={createNewRoom}>Create new room</button>
         <ul>
           {['lobby', 'ideation', 'voting', 'results'].map((state) => (
             <li key={state}>
