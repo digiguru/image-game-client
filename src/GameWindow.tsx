@@ -14,7 +14,7 @@ interface GameWindowProps {
 }
 
 const GameWindow = ({ socket, roomID }: GameWindowProps) => {
-  const [gameState, setGameState] = useState<GameState | null>(null);
+  const [gameState, setGameState] = useState<string | null>(null);
   const [users, setUsers] = useState<GameUser[]>([]);
   const [userName, setUserName] = useState('');
   const [userID] = useState(() => getPlayerID());
@@ -84,11 +84,16 @@ const GameWindow = ({ socket, roomID }: GameWindowProps) => {
     results: <Results users={users} />,
   };
 
+  const activeScreen = gameState && gameState in screens
+    ? screens[gameState as GameState]
+    : null;
+
   return (
-    <div className="game" data-room={roomID}>
-      {protocolError && <p role="alert">{protocolError}</p>}
-      {gameState ? screens[gameState] : <p role="status">Connecting to the game server…</p>}
-    </div>
+    <section className="game" data-room={roomID} aria-label={`Game room ${roomID}`}>
+      {protocolError && <p className="alert" role="alert">{protocolError}</p>}
+      {!gameState && <p role="status">Connecting to the game server…</p>}
+      {gameState && (activeScreen || <p role="status">Unknown game state: {gameState}</p>)}
+    </section>
   );
 };
 
