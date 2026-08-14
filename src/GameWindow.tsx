@@ -14,6 +14,7 @@ interface GameWindowProps {
   roomID: string;
 }
 
+const STATE_ORDER: GameState[] = ['lobby', 'ideation', 'voting', 'results'];
 const STATE_LABELS: Record<GameState, string> = {
   lobby: 'Lobby',
   ideation: 'Ideation',
@@ -21,8 +22,18 @@ const STATE_LABELS: Record<GameState, string> = {
   results: 'Results',
 };
 
+type TransitionDirection = 'left' | 'right';
+
 function prefersReducedMotion() {
   return globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+}
+
+function getTransitionDirection(previousState: string, nextState: GameState): TransitionDirection | null {
+  const previousIndex = STATE_ORDER.indexOf(previousState as GameState);
+  const nextIndex = STATE_ORDER.indexOf(nextState);
+
+  if (previousIndex === -1 || previousIndex === nextIndex) return null;
+  return nextIndex < previousIndex ? 'left' : 'right';
 }
 
 const GameWindow = ({ socket, roomID }: GameWindowProps) => {
@@ -48,14 +59,19 @@ const GameWindow = ({ socket, roomID }: GameWindowProps) => {
   useEffect(() => {
     const gameStateListener = (state: GameState) => {
       const previousState = gameStateRef.current;
+      const direction = previousState ? getTransitionDirection(previousState, state) : null;
+
+      if (direction) {
+        document.documentElement.dataset.gameTransitionDirection = direction;
+      }
+
       const commitState = () => {
         flushSync(() => setGameState(state));
         gameStateRef.current = state;
       };
 
       if (
-        previousState
-        && previousState !== state
+        direction
         && !prefersReducedMotion()
         && typeof document.startViewTransition === 'function'
       ) {
