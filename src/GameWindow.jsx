@@ -8,45 +8,45 @@ import { Results } from './Results';
 
 const id = globalThis.crypto.randomUUID();
 
-const GameWindow = ({socket}) => {
-  const [gameState, setGameState] = useState("waiting for host...");
+const GameWindow = ({ socket }) => {
+  const [gameState, setGameState] = useState(null);
   const [users, setUsers] = useState([]);
-  const [userName, setUserName] = useState("");
-  const [userID, setUserID] = useState("");
-  const [prompt, addPrompt] = useState("");
-  const [image, setImage] = useState("");
- 
-  const handleAddUser = function (name) {
+  const [userName, setUserName] = useState('');
+  const [userID, setUserID] = useState('');
+  const [prompt, addPrompt] = useState('');
+  const [image, setImage] = useState('');
+
+  const handleAddUser = (name) => {
     setUserName(name);
     setUserID(id);
+    socket.emit('addUser', { name, userID: id });
+  };
 
-    socket.emit('addUser', {name,userID:id});
-  }
-  const handleAddPrompt = function (prompt) {
-    addPrompt(prompt);
-    socket.emit('addPrompt', {prompt, userID});
-  }
+  const handleAddPrompt = (nextPrompt) => {
+    addPrompt(nextPrompt);
+    socket.emit('addPrompt', { prompt: nextPrompt, userID });
+  };
+
   useEffect(() => {
-    
-    const gameStateListener = (gameState) => {
-      setGameState(gameState);
+    const gameStateListener = (nextGameState) => {
+      setGameState(nextGameState);
     };
-    const usersListener = (users) => {
-      setUsers(users);
-      const selectUser = users.find(x => x.name === userName)
-      console.log("GET users", userName, users, selectUser)
-      if(selectUser && selectUser.image) {
-        console.log("Update", image)
-        setImage(selectUser.image)
+
+    const usersListener = (nextUsers) => {
+      setUsers(nextUsers);
+      const currentUser = nextUsers.find((user) => user.userID === userID);
+      if (currentUser?.image) {
+        setImage(currentUser.image);
       }
     };
+
     const resetListener = () => {
       setUsers([]);
-      setUserName("");
-      setUserID("");
-      addPrompt("");
-      setImage("");
-    }
+      setUserName('');
+      setUserID('');
+      addPrompt('');
+      setImage('');
+    };
 
     socket.on('gameState', gameStateListener);
     socket.on('users', usersListener);
@@ -57,18 +57,37 @@ const GameWindow = ({socket}) => {
       socket.off('users', usersListener);
       socket.off('reset-clients', resetListener);
     };
-  }, [socket, userName, image]);
+  }, [socket, userID]);
+
+  const screens = {
+    lobby: (
+      <>
+        <Lobby userName={userName} handleAddUser={handleAddUser} />
+        <Users users={users} />
+      </>
+    ),
+    ideation: (
+      <Ideation
+        userName={userName}
+        prompt={prompt}
+        users={users}
+        handleAddPrompt={handleAddPrompt}
+        image={image}
+      />
+    ),
+    voting: <Voting initialUsers={users} currentUserID={userID} socket={socket} />,
+    results: <Results users={users} currentUserID={userID} socket={socket} />,
+  };
 
   return (
     <div className="game">
-      {{
-        'lobby': <><Lobby userName={userName} handleAddUser={handleAddUser} /><Users users={users} /></>,
-        'ideation': <Ideation userName={userName} prompt={prompt} users={users} handleAddPrompt={handleAddPrompt} image={image} />,
-        'voting': <Voting initialUsers={users} currentUserID={userID} socket={socket} />,
-        'results': <Results users={users} currentUserID={userID} socket={socket} />,
-        'other': <><p>Not sure how you got here</p></>
-      }[gameState || 'other']}
+      {gameState ? (
+        screens[gameState] || <p role="status">Unknown game state: {gameState}</p>
+      ) : (
+        <p role="status">Connecting to the game server…</p>
+      )}
     </div>
   );
 };
+
 export default GameWindow;
