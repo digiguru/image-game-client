@@ -5,21 +5,20 @@ import { Lobby } from './Lobby';
 import { Ideation } from './Ideation';
 import { Voting } from './Voting';
 import { Results } from './Results';
+import { getPlayerID } from './playerIdentity';
 
-const id = globalThis.crypto.randomUUID();
-
-const GameWindow = ({ socket }) => {
+const GameWindow = ({ socket, roomID }) => {
   const [gameState, setGameState] = useState(null);
   const [users, setUsers] = useState([]);
   const [userName, setUserName] = useState('');
-  const [userID, setUserID] = useState('');
+  const [userID, setUserID] = useState(() => getPlayerID());
   const [prompt, addPrompt] = useState('');
   const [image, setImage] = useState('');
+  const [protocolError, setProtocolError] = useState('');
 
   const handleAddUser = (name) => {
     setUserName(name);
-    setUserID(id);
-    socket.emit('addUser', { name, userID: id });
+    socket.emit('addUser', { name, userID });
   };
 
   const handleAddPrompt = (nextPrompt) => {
@@ -28,34 +27,34 @@ const GameWindow = ({ socket }) => {
   };
 
   useEffect(() => {
-    const gameStateListener = (nextGameState) => {
-      setGameState(nextGameState);
-    };
-
+    const gameStateListener = setGameState;
     const usersListener = (nextUsers) => {
       setUsers(nextUsers);
       const currentUser = nextUsers.find((user) => user.userID === userID);
-      if (currentUser?.image) {
-        setImage(currentUser.image);
-      }
+      if (currentUser?.name) setUserName(currentUser.name);
+      if (currentUser?.image) setImage(currentUser.image);
     };
-
     const resetListener = () => {
       setUsers([]);
       setUserName('');
-      setUserID('');
       addPrompt('');
       setImage('');
+      setProtocolError('');
+    };
+    const errorListener = ({ message } = {}) => {
+      setProtocolError(message || 'The game server rejected that action');
     };
 
     socket.on('gameState', gameStateListener);
     socket.on('users', usersListener);
     socket.on('reset-clients', resetListener);
+    socket.on('protocolError', errorListener);
 
     return () => {
       socket.off('gameState', gameStateListener);
       socket.off('users', usersListener);
       socket.off('reset-clients', resetListener);
+      socket.off('protocolError', errorListener);
     };
   }, [socket, userID]);
 
@@ -80,7 +79,8 @@ const GameWindow = ({ socket }) => {
   };
 
   return (
-    <div className="game">
+    <div className="game" data-room={roomID}>
+      {protocolError && <p role="alert">{protocolError}</p>}
       {gameState ? (
         screens[gameState] || <p role="status">Unknown game state: {gameState}</p>
       ) : (
