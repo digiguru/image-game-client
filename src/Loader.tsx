@@ -2,10 +2,10 @@ import './Loader.css';
 
 function Loader() {
   return (
-    <div className="loader">
-      <div className="dot" />
-      <div className="dot" />
-    </div>
+    <span className="loader" aria-hidden="true">
+      <span className="dot" />
+      <span className="dot" />
+    </span>
   );
 }
 
