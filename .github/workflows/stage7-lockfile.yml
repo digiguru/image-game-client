@@ -1,0 +1,32 @@
+name: Stage 7 dependency setup
+
+on:
+  push:
+    branches: [agent/stage-7-typescript-ci]
+
+permissions:
+  contents: write
+
+jobs:
+  update-dependencies:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: agent/stage-7-typescript-ci
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm install --save-dev typescript @types/react @types/react-dom @types/node @vitest/coverage-v8
+      - name: Commit dependency files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package.json package-lock.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Add Stage 7 TypeScript and coverage tooling"
+            git push
+          fi
