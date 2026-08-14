@@ -25,22 +25,11 @@ Use `/host?room=ROOM_ID` for host controls and `/?room=ROOM_ID` for players. Wit
 
 Production defaults to the Image Game Server Vercel deployment and its Vercel Socket.IO function path. Local development defaults to `/socket.io`.
 
-## TypeScript migration
+## TypeScript
 
-Stage 7 establishes an incremental TypeScript baseline rather than converting every component in one high-risk rename pass.
+The shipped application source is TypeScript/TSX. Typed contracts cover the Socket.IO protocol, room/player identity, environment resolution and all React runtime components. The existing Vitest files remain JSX consumers of those typed modules.
 
-Typed boundaries currently include:
-
-- the Vite application entry point
-- Socket.IO client/server event contracts
-- Socket.IO environment/configuration resolution
-- room URL helpers
-- stable player identity
-- test bootstrap
-
-Legacy React JSX remains supported temporarily through `allowJs`, but `npm run typecheck` is a required CI gate. New shared protocol/boundary code should be TypeScript, and remaining components can be migrated incrementally without disabling strict checking for typed files.
-
-The old Create React App bootstrap, duplicate `public/index.html`, CRA logos/manifest and unused `web-vitals` integration have been removed. Vite's root `index.html` is the single application entry point.
+`npm run typecheck` is a required CI gate and production builds run it before Vite. The old Create React App bootstrap, duplicate `public/index.html`, CRA logos/manifest, `reportWebVitals`, unused `web-vitals` integration and dead Shuffle helper have been removed. Vite's root `index.html` and `src/main.tsx` are the single application bootstrap path.
 
 ## Quality commands
 
@@ -61,6 +50,8 @@ npm run check
 - `npm run build` requires a successful typecheck before producing `dist/`.
 - `npm run test:e2e` runs the real Playwright multiplayer flow.
 - `npm run check` runs the local lint/typecheck/coverage/build quality gate.
+
+The Stage 7 coverage floor is 80% lines/statements and 75% functions/branches. It is intentionally below the current measured coverage so normal refactors have room while meaningful regressions still fail CI.
 
 ## Full-stack Playwright test
 
