@@ -44,3 +44,40 @@ jobs:
 
       - name: Build project
         run: npm run build
+
+  e2e:
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout client
+        uses: actions/checkout@v7
+
+      - name: Checkout image game server
+        uses: actions/checkout@v7
+        with:
+          repository: digiguru/image-game-server
+          ref: main
+          path: .e2e-server
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install client dependencies
+        run: npm ci
+
+      - name: Install server dependencies
+        run: npm ci --prefix .e2e-server
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run full-stack game smoke
+        run: npm run test:e2e
+        env:
+          CI: true
+          IMAGE_GAME_SERVER_DIR: .e2e-server
