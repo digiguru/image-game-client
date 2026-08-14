@@ -1,9 +1,36 @@
-form {
-    max-width: 500px;
-    width: 100%;
+.message-form {
+  width: min(36rem, 100%);
+}
+
+.message-form label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-weight: 700;
+}
+
+.message-form-row {
+  display: flex;
+  gap: 0.65rem;
+  align-items: stretch;
+}
+
+.message-form input {
+  min-width: 0;
+  flex: 1 1 auto;
+  min-height: 2.75rem;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 0.55rem;
+  background: var(--surface);
+  color: var(--text);
+}
+
+.message-form input::placeholder {
+  color: #716a7d;
+}
+
+@media (max-width: 34rem) {
+  .message-form-row {
+    flex-direction: column;
   }
-  
-  input {
-    width: 100%;
-    padding: 0.5rem;
-  }
+}
