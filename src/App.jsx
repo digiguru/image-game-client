@@ -4,45 +4,59 @@ import {
   BrowserRouter as Router,
   Routes,
   Route
-} from "react-router-dom";
+} from 'react-router-dom';
 import GameWindow from './GameWindow';
 import Host from './Host';
 import { getSocketConfig } from './socketConfig';
+import { getRoomID } from './gameRoom';
 import './App.css';
 
 function App() {
   const [socket, setSocket] = useState(null);
+  const [connectionState, setConnectionState] = useState('connecting');
+  const roomID = getRoomID();
 
   useEffect(() => {
     const { serverUrl, options } = getSocketConfig();
-
-    console.log(`Socket server ${serverUrl}${options.path}`);
     const newSocket = io(serverUrl, options);
-    setSocket(newSocket);
-    newSocket.emit('getGameState');
-    newSocket.emit('getUsers');
 
-    return () => newSocket.close();
-  }, []);
+    const syncRoom = () => {
+      setConnectionState('connected');
+      newSocket.emit('joinGame', { roomID });
+      newSocket.emit('getGameState');
+      newSocket.emit('getUsers');
+    };
+
+    newSocket.on('connect', syncRoom);
+    newSocket.on('disconnect', () => setConnectionState('disconnected'));
+    newSocket.on('connect_error', () => setConnectionState('error'));
+    setSocket(newSocket);
+
+    return () => {
+      newSocket.off('connect', syncRoom);
+      newSocket.close();
+    };
+  }, [roomID]);
 
   return (
     <div className="App">
       <header className="app-header">
         AI Image Game
       </header>
+      {connectionState !== 'connected' && (
+        <p role="status">Game server: {connectionState}</p>
+      )}
       {socket ? (
         <>
           <Router>
-            <div>
-              <Routes>
-                <Route path="/host" element={<Host socket={socket} />} />
-              </Routes>
-            </div>
+            <Routes>
+              <Route path="/host" element={<Host socket={socket} roomID={roomID} />} />
+            </Routes>
           </Router>
-          <GameWindow socket={socket} />
+          <GameWindow socket={socket} roomID={roomID} />
         </>
       ) : (
-        <div>Not Connected</div>
+        <div>Connecting…</div>
       )}
     </div>
   );
