@@ -1,3 +1,16 @@
 .game {
-  margin: 1.2em;
+  min-width: 0;
+  padding: clamp(1rem, 3vw, 1.5rem);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.game > :first-child {
+  margin-top: 0;
+}
+
+.game img {
+  border-radius: 0.6rem;
 }
