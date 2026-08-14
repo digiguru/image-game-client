@@ -26,7 +26,9 @@ async function expectAccessible(page, label) {
 
 async function expectBannerColour(page, phase) {
   await expect.poll(
-    () => page.locator('.app-header').evaluate((element) => getComputedStyle(element).backgroundColor),
+    () => page.locator('.app-header').evaluate(
+      (element) => element.ownerDocument.defaultView.getComputedStyle(element).backgroundColor,
+    ),
     { message: `${phase} banner should match the game phase colour` },
   ).toBe(PHASE_BANNER_COLOURS[phase]);
 }
