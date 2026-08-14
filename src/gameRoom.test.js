@@ -1,5 +1,11 @@
 import { describe, expect, test } from 'vitest';
-import { DEFAULT_ROOM_ID, getRoomID, getPlayerShareUrl, normaliseRoomID } from './gameRoom';
+import {
+  DEFAULT_ROOM_ID,
+  getRequestedHostState,
+  getRoomID,
+  getPlayerShareUrl,
+  normaliseRoomID,
+} from './gameRoom';
 
 describe('game room helpers', () => {
   test('reads a valid room from the URL', () => {
@@ -13,5 +19,11 @@ describe('game room helpers', () => {
 
   test('creates a player link for the same room', () => {
     expect(getPlayerShareUrl('ROOM1', { origin: 'https://game.example' })).toBe('https://game.example/?room=ROOM1');
+  });
+
+  test('accepts valid host phase shortcuts only on the host route', () => {
+    expect(getRequestedHostState('?room=ROOM1&state=ideation', '/host')).toBe('ideation');
+    expect(getRequestedHostState('?room=ROOM1&state=banana', '/host')).toBeNull();
+    expect(getRequestedHostState('?room=ROOM1&state=voting', '/')).toBeNull();
   });
 });
