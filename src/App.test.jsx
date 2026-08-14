@@ -1,8 +1,8 @@
 import { render, screen, waitFor } from '@testing-library/react';
-import io from 'socket.io-client';
+import { io } from 'socket.io-client';
 import App from './App';
 
-vi.mock('socket.io-client', () => ({ default: vi.fn() }));
+vi.mock('socket.io-client', () => ({ io: vi.fn() }));
 
 function createSocketMock() {
   const listeners = new Map();
