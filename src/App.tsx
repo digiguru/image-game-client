@@ -39,22 +39,30 @@ function App() {
 
   return (
     <div className="App">
-      <header className="app-header">AI Image Game</header>
+      <a className="skip-link" href="#main-content">Skip to game</a>
+      <header className="app-header">
+        <span className="app-title">AI Image Game</span>
+      </header>
       {connectionState !== 'connected' && (
-        <p role="status">Game server: {connectionState}</p>
+        <p className="connection-status" role="status" aria-live="polite">
+          Game server: {connectionState}
+        </p>
       )}
-      {socket ? (
-        <>
-          <Router>
-            <Routes>
-              <Route path="/host" element={<Host socket={socket} roomID={roomID} />} />
-            </Routes>
-          </Router>
-          <GameWindow socket={socket} roomID={roomID} />
-        </>
-      ) : (
-        <div>Connecting…</div>
-      )}
+      <main id="main-content" tabIndex={-1}>
+        {socket ? (
+          <>
+            <Router>
+              <Routes>
+                <Route path="/host" element={<Host socket={socket} roomID={roomID} />} />
+                <Route path="*" element={null} />
+              </Routes>
+            </Router>
+            <GameWindow socket={socket} roomID={roomID} />
+          </>
+        ) : (
+          <p role="status">Connecting to the game server…</p>
+        )}
+      </main>
     </div>
   );
 }
