@@ -18,7 +18,7 @@ describe('GameWindow', () => {
   test('shows a visible connecting state before the server sends game state', () => {
     const socket = createSocketMock();
 
-    render(<GameWindow socket={socket} />);
+    render(<GameWindow socket={socket} roomID="TEST" />);
 
     expect(screen.getByRole('status')).toHaveTextContent('Connecting to the game server');
   });
@@ -26,7 +26,7 @@ describe('GameWindow', () => {
   test('renders the lobby when the server announces lobby state', () => {
     const socket = createSocketMock();
 
-    render(<GameWindow socket={socket} />);
+    render(<GameWindow socket={socket} roomID="TEST" />);
 
     act(() => {
       socket.listeners.get('gameState')('lobby');
@@ -38,7 +38,7 @@ describe('GameWindow', () => {
   test('shows unexpected server state instead of rendering a blank screen', () => {
     const socket = createSocketMock();
 
-    render(<GameWindow socket={socket} />);
+    render(<GameWindow socket={socket} roomID="TEST" />);
 
     act(() => {
       socket.listeners.get('gameState')('mystery-state');

@@ -1,84 +1,150 @@
 .admin {
-
-}
-.admin-menu {
-  background-color: rgb(96, 47, 152);
-  color: white;
-  font-weight: bold;
   display: grid;
-  grid-template-columns: 1fr 2fr;
-  justify-items: start;
-  align-items: center;
-  width: 100%;
-}
-.admin-menu > h1 {
-  padding: 10px;
-}
-pre {
-  white-space:pre-line;
-  overflow: scroll;
-  width: 500px;
-}
-.admin-menu > ul {
-  list-style-type: none;
-  display: inline-grid;
-  justify-items: end;
-  grid-template-columns: repeat(4, 25% [col-start]);
-  width:100%;
-  padding: 0px;
-  margin: 0px;
-  
-}
-.admin button {
-  width: 100%;
-  display: inline-block;
-  border: 1px sold white;
-  padding: 1rem;
-  margin: 0;
-  text-decoration: none;
-  background: #0069ed;
-  color: #ffffff;
-  font-family: 'Poppins', sans-serif;
-  font-size: 1rem;
-  line-height: 1;
-  cursor: pointer;
-  text-align: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
 }
 
-.admin-debug button.selected {
-  background: rgb(96, 47, 152);
-}
-.admin-debug button.red {
-  background: #FF0000;
-}
-.admin-debug button.hidden {
-  display:none;
-
-}
+.admin-menu,
 .admin-debug {
-  background: #cccccc;
-  color: black;
-  font-weight: bold;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  justify-items: start;
-  align-items: top;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
 
+.admin-menu {
+  display: grid;
+  grid-template-columns: minmax(14rem, 1fr) minmax(20rem, 2fr);
+  gap: 1rem;
+  align-items: end;
+  padding: 1rem;
+  border-top: 0.4rem solid var(--primary);
 }
+
+.admin-menu h1 {
+  margin-top: 0;
+}
+
+.admin-menu nav ul {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.5rem;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.admin-menu nav button {
+  width: 100%;
+}
+
+.admin-menu nav button.selected,
+.admin-menu nav button[aria-pressed="true"] {
+  background: var(--surface);
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+.admin-debug {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.admin-debug h2,
+.admin-debug legend {
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.admin-debug fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 0.65rem;
+}
+
+.admin-debug details {
+  border: 1px solid var(--border);
+  border-radius: 0.65rem;
+  background: var(--surface-subtle);
+}
+
+.admin-debug summary {
+  padding: 0.65rem;
+  cursor: pointer;
+  font-weight: 700;
+}
+
 .admin-debug pre {
-  border: 1px solid #333;
-  background: white;
-  height: 100px;
- 
+  width: 100%;
+  max-height: 14rem;
+  overflow: auto;
+  margin: 0;
+  padding: 0.75rem;
+  background: #17141d;
+  color: #f8f7fa;
+  font-size: 0.8rem;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
+
 .admin-generators {
   display: grid;
-  grid-template-columns: 50px 1fr;
+  gap: 0.45rem;
 }
-.debug {
-  border: 1px solid #333;
-  background: white;
-  width: 500px;
-  height: 500px;
-  overflow: scroll;
+
+.generator-option {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 2.5rem;
+  padding: 0.35rem 0.5rem;
+  border-radius: 0.45rem;
+  cursor: pointer;
+}
+
+.generator-option:hover {
+  background: var(--surface-subtle);
+}
+
+.generator-option input {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.admin-actions,
+.reset-confirmation {
+  display: grid;
+  gap: 0.6rem;
+  align-content: start;
+}
+
+button.secondary {
+  background: var(--surface);
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+button.secondary:hover:not(:disabled) {
+  background: var(--surface-subtle);
+}
+
+button.danger {
+  background: var(--danger);
+}
+
+@media (max-width: 52rem) {
+  .admin-menu,
+  .admin-debug {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 36rem) {
+  .admin-menu nav ul {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }

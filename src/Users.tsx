@@ -6,20 +6,25 @@ interface UsersProps {
 }
 
 function Users({ users }: UsersProps) {
+  if (users.length === 0) return null;
+
   return (
-    <div className="user-list">
-      {[...users]
-        .sort((a, b) => a.name.localeCompare(b.name))
-        .map((user) => (
-          <div
-            key={user.userID}
-            className="user-container"
-            title={`Added at ${new Date(user.time).toLocaleTimeString()}`}
-          >
-            <span className="user">{user.name}</span>
-          </div>
-        ))}
-    </div>
+    <section aria-labelledby="players-title">
+      <h2 id="players-title" className="section-title">Players</h2>
+      <ul className="user-list" aria-label={`${users.length} players in this room`}>
+        {[...users]
+          .sort((a, b) => a.name.localeCompare(b.name))
+          .map((user) => (
+            <li
+              key={user.userID}
+              className="user-container"
+              title={`Joined at ${new Date(user.time).toLocaleTimeString()}`}
+            >
+              <span className="user">{user.name}</span>
+            </li>
+          ))}
+      </ul>
+    </section>
   );
 }
 

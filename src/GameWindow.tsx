@@ -89,11 +89,11 @@ const GameWindow = ({ socket, roomID }: GameWindowProps) => {
     : null;
 
   return (
-    <div className="game" data-room={roomID}>
-      {protocolError && <p role="alert">{protocolError}</p>}
+    <section className="game" data-room={roomID} aria-label={`Game room ${roomID}`}>
+      {protocolError && <p className="alert" role="alert">{protocolError}</p>}
       {!gameState && <p role="status">Connecting to the game server…</p>}
       {gameState && (activeScreen || <p role="status">Unknown game state: {gameState}</p>)}
-    </div>
+    </section>
   );
 };
 

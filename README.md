@@ -31,6 +31,20 @@ The shipped application source is TypeScript/TSX. Typed contracts cover the Sock
 
 `npm run typecheck` is a required CI gate and production builds run it before Vite. The old Create React App bootstrap, duplicate `public/index.html`, CRA logos/manifest, `reportWebVitals`, unused `web-vitals` integration and dead Shuffle helper have been removed. Vite's root `index.html` and `src/main.tsx` are the single application bootstrap path.
 
+## Accessibility and responsive UI
+
+The application uses semantic HTML controls and landmarks rather than click-only images or generic containers:
+
+- player/prompt forms have explicit labels, native validation and submit buttons
+- voting uses keyboard-operable buttons with pressed/disabled state announced to assistive technology
+- host phases expose their current pressed state and generators use a labelled fieldset
+- destructive reset requires an explicit confirmation with a cancel action
+- skip navigation, visible focus indicators and live connection/vote status are provided
+- player, host and voting layouts adapt to small screens instead of relying on fixed desktop widths
+- decorative loading animation is hidden from assistive technology and respects reduced-motion preferences
+
+The Playwright multiplayer scenario runs axe WCAG 2 A/AA checks at the host lobby, player lobby, ideation, voting and results screens. Accessibility violations fail the same E2E job as functional game failures.
+
 ## Quality commands
 
 ```bash
@@ -48,10 +62,10 @@ npm run check
 - `npm test` runs Vitest unit/component tests.
 - `npm run test:coverage` runs the same suite with enforced V8 coverage thresholds.
 - `npm run build` requires a successful typecheck before producing `dist/`.
-- `npm run test:e2e` runs the real Playwright multiplayer flow.
+- `npm run test:e2e` runs the real Playwright multiplayer flow plus accessibility auditing.
 - `npm run check` runs the local lint/typecheck/coverage/build quality gate.
 
-The Stage 7 coverage floor is 80% lines/statements and 75% functions/branches. It is intentionally below the current measured coverage so normal refactors have room while meaningful regressions still fail CI.
+The Stage 7 coverage floor is 80% lines/statements and 75% functions/branches. It is intentionally below the measured coverage so normal refactors have room while meaningful regressions still fail CI.
 
 ## Full-stack Playwright test
 
@@ -72,11 +86,11 @@ npm run test:e2e
 
 Set `IMAGE_GAME_SERVER_DIR` if the server checkout is elsewhere.
 
-The primary E2E scenario creates a unique room and drives three independent browser contexts: one host, Alice and Bob. It covers lobby joining, selecting the Mock provider, prompt submission, generated-image delivery, voting and results. No external image-generation credentials are required.
+The primary E2E scenario creates a unique room and drives three independent browser contexts: one host, Alice and Bob. It covers lobby joining, selecting the Mock provider, prompt submission, generated-image delivery, voting, results and WCAG accessibility scans. No external image-generation credentials are required.
 
 ## CI
 
-Pull requests and `main` pushes run deterministic install/audit, lint, TypeScript checking, coverage-enforced Vitest tests and the production build. Only after those pass does a second required job check out `digiguru/image-game-server@main`, install Chromium and execute the real full-stack Playwright game flow.
+Pull requests and `main` pushes run deterministic install/audit, lint, TypeScript checking, coverage-enforced Vitest tests and the production build. Only after those pass does a second required job check out `digiguru/image-game-server@main`, install Chromium and execute the real full-stack Playwright game/accessibility flow.
 
 ## Production-hardening boundary
 
