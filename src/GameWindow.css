@@ -1,10 +1,53 @@
 .game {
+  --stage-accent: #4f2377;
+  --stage-accent-soft: rgba(79, 35, 119, 0.14);
+  --stage-surface: #fbf8ff;
+  position: relative;
   min-width: 0;
+  overflow: hidden;
   padding: clamp(1rem, 3vw, 1.5rem);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  background: var(--surface);
+  background:
+    radial-gradient(circle at 100% 0%, var(--stage-accent-soft), transparent 38%),
+    var(--stage-surface);
   box-shadow: var(--shadow);
+  transition:
+    background-color 700ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    border-color 700ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 700ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.game[data-game-state='lobby'] {
+  --stage-accent: #2457c5;
+  --stage-accent-soft: rgba(36, 87, 197, 0.16);
+  --stage-surface: #f7f9ff;
+  border-color: rgba(36, 87, 197, 0.28);
+}
+
+.game[data-game-state='ideation'] {
+  --stage-accent: #7c3aed;
+  --stage-accent-soft: rgba(124, 58, 237, 0.17);
+  --stage-surface: #fbf8ff;
+  border-color: rgba(124, 58, 237, 0.3);
+}
+
+.game[data-game-state='voting'] {
+  --stage-accent: #d97706;
+  --stage-accent-soft: rgba(217, 119, 6, 0.18);
+  --stage-surface: #fffbf4;
+  border-color: rgba(217, 119, 6, 0.32);
+}
+
+.game[data-game-state='results'] {
+  --stage-accent: #15803d;
+  --stage-accent-soft: rgba(21, 128, 61, 0.17);
+  --stage-surface: #f7fdf9;
+  border-color: rgba(21, 128, 61, 0.3);
+  box-shadow:
+    var(--shadow),
+    0 0 0 1px rgba(21, 128, 61, 0.06),
+    0 1.5rem 4rem rgba(21, 128, 61, 0.08);
 }
 
 .game > :first-child {
@@ -13,4 +56,289 @@
 
 .game img {
   border-radius: 0.6rem;
+}
+
+.game-stage {
+  position: relative;
+  isolation: isolate;
+  min-height: 8rem;
+}
+
+.game-stage-content {
+  animation: game-stage-content-in 760ms 360ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.game-stage-transition {
+  position: absolute;
+  z-index: 10;
+  inset: -0.05rem;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 1rem;
+  min-height: 100%;
+  padding: clamp(1.5rem, 6vw, 4rem);
+  overflow: hidden;
+  border-radius: calc(var(--radius) - 0.1rem);
+  color: #fff;
+  text-align: center;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 40%, rgba(255, 255, 255, 0.22), transparent 28%),
+    linear-gradient(135deg, color-mix(in srgb, var(--stage-accent), #111 10%), var(--stage-accent));
+  box-shadow: inset 0 0 4rem rgba(255, 255, 255, 0.08);
+  transform-origin: 50% 50%;
+  animation: game-stage-curtain 1350ms cubic-bezier(0.76, 0, 0.24, 1) both;
+}
+
+.game-stage-transition::before,
+.game-stage-transition::after {
+  content: '';
+  position: absolute;
+  width: 24rem;
+  aspect-ratio: 1;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 50%;
+  animation: game-stage-ripple 1700ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.game-stage-transition::after {
+  width: 34rem;
+  animation-delay: 100ms;
+}
+
+.game-stage-orbit {
+  position: relative;
+  width: 5.5rem;
+  aspect-ratio: 1;
+  animation: game-stage-orbit-arrive 820ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.game-stage-orb {
+  position: absolute;
+  inset: 1.55rem;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow:
+    0 0 0 0.65rem rgba(255, 255, 255, 0.14),
+    0 0 2rem rgba(255, 255, 255, 0.42);
+  animation: game-stage-orb-pulse 900ms ease-in-out both;
+}
+
+.game-stage-ring {
+  position: absolute;
+  inset: 0.45rem;
+  border: 2px solid rgba(255, 255, 255, 0.72);
+  border-color: rgba(255, 255, 255, 0.78) transparent rgba(255, 255, 255, 0.32) transparent;
+  border-radius: 50%;
+}
+
+.game-stage-ring-one {
+  animation: game-stage-spin 1300ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.game-stage-ring-two {
+  inset: 0;
+  border-style: dotted;
+  border-color: rgba(255, 255, 255, 0.4);
+  animation: game-stage-spin-reverse 1600ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.game-stage-transition-copy {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 0.25rem;
+  animation: game-stage-copy-in 780ms 120ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.game-stage-transition-copy strong {
+  font-size: clamp(1.8rem, 7vw, 3.5rem);
+  line-height: 1;
+  letter-spacing: -0.035em;
+}
+
+.game-stage-transition-copy > span:last-child {
+  font-size: clamp(1rem, 2.6vw, 1.25rem);
+  opacity: 0.88;
+}
+
+.game-stage-kicker {
+  justify-self: center;
+  padding: 0.28rem 0.65rem;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  backdrop-filter: blur(0.4rem);
+}
+
+.game-stage-sparkles {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.game-stage-sparkles span {
+  --spark-angle: calc(var(--spark-index) * 30deg);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0.45rem;
+  height: 0.85rem;
+  border-radius: 999px;
+  background: #fff;
+  transform: translate(-50%, -50%) rotate(var(--spark-angle)) translateY(-1rem);
+  opacity: 0;
+  animation: game-stage-sparkle 950ms 260ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.game-stage-sparkles span:nth-child(3n) {
+  width: 0.65rem;
+  height: 0.65rem;
+  border-radius: 50%;
+}
+
+.game-stage-sparkles span:nth-child(3n + 1) {
+  background: #d9f99d;
+}
+
+.game-stage-sparkles span:nth-child(3n + 2) {
+  background: #fef08a;
+}
+
+.game-stage-live {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@keyframes game-stage-curtain {
+  0% {
+    opacity: 1;
+    transform: scale(1.035);
+    clip-path: circle(150% at 50% 50%);
+  }
+  58% {
+    opacity: 1;
+    transform: scale(1);
+    clip-path: circle(150% at 50% 50%);
+  }
+  100% {
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(0.985);
+    clip-path: circle(0% at 50% 50%);
+  }
+}
+
+@keyframes game-stage-content-in {
+  0% {
+    opacity: 0;
+    transform: translateY(1.25rem) scale(0.985);
+    filter: blur(0.35rem);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes game-stage-orbit-arrive {
+  0% {
+    opacity: 0;
+    transform: scale(0.55) rotate(-40deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0);
+  }
+}
+
+@keyframes game-stage-orb-pulse {
+  0%,
+  100% {
+    transform: scale(0.82);
+  }
+  55% {
+    transform: scale(1.12);
+  }
+}
+
+@keyframes game-stage-spin {
+  from {
+    transform: rotate(-110deg);
+  }
+  to {
+    transform: rotate(280deg);
+  }
+}
+
+@keyframes game-stage-spin-reverse {
+  from {
+    transform: rotate(120deg);
+  }
+  to {
+    transform: rotate(-220deg);
+  }
+}
+
+@keyframes game-stage-copy-in {
+  0% {
+    opacity: 0;
+    transform: translateY(1rem);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes game-stage-ripple {
+  0% {
+    opacity: 0;
+    transform: scale(0.28);
+  }
+  38% {
+    opacity: 0.55;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.2);
+  }
+}
+
+@keyframes game-stage-sparkle {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(var(--spark-angle)) translateY(-1rem) scale(0.5);
+  }
+  22% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(var(--spark-angle)) translateY(-11rem) scale(1.1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .game-stage-transition {
+    display: none;
+  }
+
+  .game-stage-content {
+    animation: none;
+  }
 }
