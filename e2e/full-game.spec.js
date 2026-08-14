@@ -1,4 +1,4 @@
-const { test, expect } = require('@playwright/test');
+import { test, expect } from '@playwright/test';
 
 test('host and two players can complete a full Mock-provider game', async ({ browser }) => {
   const roomID = `E2E${Date.now().toString(36)}`;
