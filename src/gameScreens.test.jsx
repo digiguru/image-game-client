@@ -1,4 +1,3 @@
-import React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Lobby } from './Lobby';
@@ -66,7 +65,7 @@ test('ideation submits a prompt and shows generated image progress', async () =>
     />,
   );
   expect(screen.getByRole('img', { name: 'A moon fox' })).toBeInTheDocument();
-  expect(screen.getByText(/Playes ready: 2 \/ 2/)).toBeInTheDocument();
+  expect(screen.getByText(/Players ready: 2 \/ 2/)).toBeInTheDocument();
 });
 
 test('voting emits votes for other players but not the current player', async () => {
