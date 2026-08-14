@@ -6,50 +6,40 @@ import {
   Route
 } from "react-router-dom";
 import GameWindow from './GameWindow';
-import Host from './Host'
+import Host from './Host';
+import { getSocketConfig } from './socketConfig';
 import './App.css';
-
 
 function App() {
   const [socket, setSocket] = useState(null);
-  
-  useEffect(() => {
-    
-    const location = import.meta.env.VITE_SERVER_HOSTNAME || `http://${window.location.hostname}:3000`
 
-    console.log(`Locations ${location}`);
-    const newSocket = io(location);
+  useEffect(() => {
+    const { serverUrl, options } = getSocketConfig();
+
+    console.log(`Socket server ${serverUrl}${options.path}`);
+    const newSocket = io(serverUrl, options);
     setSocket(newSocket);
     newSocket.emit('getGameState');
     newSocket.emit('getUsers');
 
     return () => newSocket.close();
-    
-  }, [setSocket]);
-
-  
+  }, []);
 
   return (
     <div className="App">
       <header className="app-header">
         AI Image Game
       </header>
-      { socket ? (
+      {socket ? (
         <>
-
           <Router>
             <div>
               <Routes>
-
-                
-                <Route path="/host" element={<Host socket={socket}  />}/>
-
+                <Route path="/host" element={<Host socket={socket} />} />
               </Routes>
             </div>
           </Router>
           <GameWindow socket={socket} />
-                
-
         </>
       ) : (
         <div>Not Connected</div>
