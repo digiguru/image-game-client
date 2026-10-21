@@ -59,7 +59,7 @@ export const Voting = ({ initialUsers, currentUserID, socket }: VotingProps) => 
             const isOwnImage = currentUserID === userID;
             const disabled = isOwnImage || (!selected && votes >= maxVotes);
             const actionLabel = isOwnImage
-              ? `Your image: ${prompt}`
+              ? `${prompt} — Your image`
               : selected
                 ? `Remove vote for ${prompt}`
                 : `Vote for ${prompt}`;

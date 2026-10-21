@@ -79,7 +79,7 @@ test('voting uses accessible buttons and blocks voting for your own image', asyn
   const socket = socketMock();
   render(<Voting initialUsers={[alice, bob]} currentUserID="alice" socket={socket} />);
 
-  expect(screen.getByRole('button', { name: 'Your image: Alice robot' })).toBeDisabled();
+  expect(screen.getByRole('button', { name: 'Alice robot — Your image' })).toBeDisabled();
 
   const voteButton = screen.getByRole('button', { name: 'Vote for Bob castle' });
   expect(voteButton).toHaveAttribute('aria-pressed', 'false');
